@@ -7,7 +7,7 @@ import 'package:products_app/domain/response/login_response.dart';
 class ApiReppositoryImpl extends ApiRepositoryInterface {
   @override
   Future<User> getUserFromToken(String token) async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     if (token == 'A1') {
       return User(
           name: 'Carlos Perez',

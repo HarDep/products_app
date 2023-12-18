@@ -1,28 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/domain/repository/api_repository.dart';
+import 'package:products_app/domain/repository/local_storage_repository.dart';
+import 'package:products_app/presentation/providers/splash_provider.dart';
+import 'package:products_app/presentation/screens/home_screen.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({
-    super.key,
-  });
+  const SplashScreen._();
+
+  static Widget init(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => SplashProvider(
+        localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+        apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+      ),
+      builder: (_, __) => const SplashScreen._(),
+    );
+  }
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-@override
-void initState() {
-  _loadLogin();
-  super.initState();  
-}
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _validateSession();
+      },
+    );
+    super.initState();
+  }
 
-void _loadLogin() {
-  Future.delayed(const Duration(seconds: 2), () {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
-  });
-}
+  void _validateSession() async {
+    final SplashProvider splashProvider = context.read<SplashProvider>();
+    bool validation = await splashProvider.validateSesion();
+    if (validation) {
+      _navigate(const HomeScreen());
+      return;
+    }
+    _navigate(const LoginScreen());
+  }
+
+  void _navigate(Widget screen) {
+    Navigator.of(context)
+      .pushReplacement(MaterialPageRoute(builder: (_) => screen));
+  }
 
   @override
   Widget build(BuildContext context) {
