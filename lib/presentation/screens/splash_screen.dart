@@ -39,15 +39,19 @@ class _SplashScreenState extends State<SplashScreen> {
     final SplashProvider splashProvider = context.read<SplashProvider>();
     bool validation = await splashProvider.validateSesion();
     if (validation) {
-      _navigate(const HomeScreen());
+      _navigate(_getHomeScreen());
       return;
     }
     _navigate(const LoginScreen());
   }
 
+  Widget _getHomeScreen() {
+    return HomeScreen.init(context);
+  }
+
   void _navigate(Widget screen) {
     Navigator.of(context)
-      .pushReplacement(MaterialPageRoute(builder: (_) => screen));
+        .pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   @override

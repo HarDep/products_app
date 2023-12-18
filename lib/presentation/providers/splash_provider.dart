@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:products_app/domain/repository/api_repository.dart';
-import 'package:products_app/domain/repository/local_storage_repository.dart';
+import '../../domain/repository/repositories.dart';
 
 class SplashProvider extends ChangeNotifier {
   final LocalRepositoryInterface localRepositoryInterface;

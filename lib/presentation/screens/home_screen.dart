@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/screens/cart_screen.dart';
 import 'package:products_app/presentation/screens/products_screen.dart';
 import 'package:products_app/presentation/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+import '../../domain/repository/repositories.dart';
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+class HomeScreen extends StatelessWidget {
+  const HomeScreen._();
 
-class _HomeScreenState extends State<HomeScreen> {
-  int currentIndex = 0;
+  static Widget init(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => HomeProvider(
+        localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+        apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+      )..loadUser(),
+      builder: (_, __) => const HomeScreen._(),
+    );
+  }
+  //int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<HomeProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         shape: const Border(),
@@ -25,35 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
         children: [
           Expanded(
-              child: IndexedStack(
-            index: currentIndex,
+            child: IndexedStack(
+            index: provider.indexSelected,
             children: [
               const ProductsScreen(),
               Text(
-                'current index 2 $currentIndex',
+                'current index 2 ${provider.indexSelected}',
                 style: const TextStyle(color: Colors.red),
               ),
               CartScreen(
                 goShopping: () {
-                  setState(() {
-                    currentIndex = 0;
-                  });
+                  provider.updateIndex(0);
                 },
               ),
               Text(
-                'current index 4 $currentIndex',
+                'current index 4 ${provider.indexSelected}',
                 style: const TextStyle(color: Colors.red),
               ),
               const ProfileScreen(),
             ],
           )),
           _NavigationBar(
-              index: currentIndex,
-              onIndexSelected: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              }),
+            index: provider.indexSelected,
+            onIndexSelected: (index) {
+              provider.updateIndex(index);
+            },
+          ),
         ],
       )),
     );
@@ -70,6 +76,7 @@ class _NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<HomeProvider>(context, listen: true);
     return Padding(
       padding: const EdgeInsets.all(25.0),
       child: DecoratedBox(
@@ -107,9 +114,9 @@ class _NavigationBar extends StatelessWidget {
                       Icons.favorite_border_outlined)),
               InkWell(
                 onTap: () => onIndexSelected(4),
-                child: const CircleAvatar(
+                child: provider.user!.image == null ? const SizedBox.shrink() : CircleAvatar(
                   radius: 15,
-                  backgroundColor: Colors.red,
+                  backgroundImage: AssetImage(provider.user!.image!),
                 ),
               ),
             ],

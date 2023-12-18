@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/themes.dart';
 import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
-import 'package:products_app/domain/repository/api_repository.dart';
-import 'package:products_app/domain/repository/local_storage_repository.dart';
 import 'package:products_app/presentation/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'domain/repository/repositories.dart';
 
 
 void main() => runApp(const MyApp());
