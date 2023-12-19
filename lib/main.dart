@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:products_app/configs/themes.dart';
 import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
+import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -16,27 +16,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<ApiRepositoryInterface>(create: (_) => ApiReppositoryImpl()),
-        Provider<LocalRepositoryInterface>(
-            create: (_) => LocalRepositoryImpl()),
+        Provider<ApiRepositoryInterface>(create: (_) => ApiReppositoryImpl(),),
+        Provider<LocalRepositoryInterface>(create: (_) => LocalRepositoryImpl(),),
         ChangeNotifierProvider(create: (context) {
           return ThemeProvider(
-              localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
           )..loadTheme();
-        })
+        }),
+        ChangeNotifierProvider(create: (context) {
+          return SplashProvider(
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+            apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+          );
+        }),
       ],
-      child: Builder(builder: (newContext) {
-        return Consumer<ThemeProvider>(
-          builder: (context, themeProvider,_) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Products App',
-              home: SplashScreen.init(newContext),
-              theme: themeProvider.currentTheme,
-            );
-          }
-        );
-      }),
+      child: Consumer<ThemeProvider>(
+        builder: (_, themeProvider, __) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Products App',
+            home: const SplashScreen(),
+            theme: themeProvider.currentTheme,
+          );
+        }
+      ),
     );
   }
 }

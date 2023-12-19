@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
-import 'package:products_app/domain/repository/api_repository.dart';
-import 'package:products_app/domain/repository/local_storage_repository.dart';
 import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/screens/home_screen.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen._();
-
-  static Widget init(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SplashProvider(
-        localRepositoryInterface: context.read<LocalRepositoryInterface>(),
-        apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
-      ),
-      builder: (_, __) => const SplashScreen._(),
-    );
-  }
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

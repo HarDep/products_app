@@ -113,8 +113,9 @@ class LoginScreen extends StatelessWidget {
               height: 50,
                 text: 'iniciar sesion',
                 voidCallback: () {
+                  //TODO : validar
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomeScreen()));
+                      MaterialPageRoute(builder: (_) => HomeScreen.init(context)));
                 }
             ),
           ),
