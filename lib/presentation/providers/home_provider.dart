@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/user.dart';
 import '../../domain/repository/repositories.dart';
 
+enum UserStatus { identified, unidentified }
+
 class HomeProvider extends ChangeNotifier {
   final LocalRepositoryInterface localRepositoryInterface;
   final ApiRepositoryInterface apiRepositoryInterface;
   User? user;
   int indexSelected = 0;
   bool? isDark;
+  var userStatus = UserStatus.identified;
 
   HomeProvider({
     required this.localRepositoryInterface,
@@ -16,6 +19,7 @@ class HomeProvider extends ChangeNotifier {
 
   void loadUser() async {
     user = await localRepositoryInterface.getUser();
+    userStatus = UserStatus.identified;
     notifyListeners();
   }
 
@@ -35,7 +39,9 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logOut() async {
+  Future<void> logOut() async {
+    userStatus = UserStatus.unidentified;
+    notifyListeners();
     final token = await localRepositoryInterface.getToken();
     await apiRepositoryInterface.logout(token!);
     await localRepositoryInterface.cleanInfo();

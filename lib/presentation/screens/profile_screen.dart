@@ -11,14 +11,17 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context, listen: true);
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     final user = provider.user;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
         title: const Text('Mi Perfil'),
       ),
-      body: user != null
-          ? Padding(
+      body: user != null? 
+        Stack(
+          children: [
+            Padding(
               padding: const EdgeInsets.only(
                   top: 40, bottom: 10, left: 30, right: 30),
               child: Column(
@@ -131,8 +134,6 @@ class ProfileScreen extends StatelessWidget {
                                     ),
                                     onChanged: (value) {
                                       provider.updateTheme(value);
-                                      final themeProvider =
-                                          context.read<ThemeProvider>();
                                       themeProvider.updateTheme(value);
                                     }),
                               ],
@@ -145,8 +146,10 @@ class ProfileScreen extends StatelessWidget {
                           style: const ButtonStyle(
                               backgroundColor:
                                   MaterialStatePropertyAll(AppColors.purple)),
-                          onPressed: () {
-                            provider.logOut();
+                          onPressed: () async{
+                            await provider.logOut();
+                            await themeProvider.loadTheme();
+                            // ignore: use_build_context_synchronously
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
                                     builder: (_) => const LoginScreen()),
@@ -162,8 +165,20 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-          : const SizedBox.shrink(),
+            ),
+            Positioned.fill(
+            child: provider.userStatus == UserStatus.unidentified? 
+            Container(//se ve solo en el scaffold no en todo
+                color: Colors.black26,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : const SizedBox.shrink(),
+          ),
+          ],
+        )
+      : const SizedBox.shrink(),
     );
   }
 }

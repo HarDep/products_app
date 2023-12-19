@@ -20,12 +20,13 @@ class LoginScreen extends StatelessWidget {
       return;
     }
     final snackBar = SnackBar(
-      content: const Text('Usuario y/o contraseña incorrectos!'),
+      content: const Text('Usuario y/o contraseña incorrectos!', style: TextStyle(color: AppColors.white),),
       action: SnackBarAction(
         label: 'Ok',
         onPressed: () {},
       ),
       duration: const Duration(seconds: 2),
+      backgroundColor: Colors.redAccent,
     );
     // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -105,6 +106,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           TextField(
                             controller: loginProvider.usernameTextController,
+                            style: const TextStyle(color: AppColors.lightGrey),
                             decoration: InputDecoration(
                               hintText: 'Username',
                               prefixIcon: Icon(
@@ -126,6 +128,7 @@ class LoginScreen extends StatelessWidget {
                           TextField(
                             obscureText: true,
                             controller: loginProvider.passwordTextController,
+                            style: const TextStyle(color: AppColors.lightGrey),
                             decoration: InputDecoration(
                               hintText: 'Password',
                               prefixIcon: Icon(
@@ -152,14 +155,14 @@ class LoginScreen extends StatelessWidget {
             ],
           ),
           Positioned.fill(
-            child: loginProvider.loginState == LoginState.loading
-                ? Container(
-                    color: Colors.black26,
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                : const SizedBox.shrink(),
+            child: loginProvider.loginState == LoginState.loading? 
+            Container(
+                color: Colors.black26,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : const SizedBox.shrink(),
           ),
         ],
       ),

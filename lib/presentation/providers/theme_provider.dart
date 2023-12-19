@@ -8,7 +8,7 @@ class ThemeProvider extends ChangeNotifier {
 
   ThemeProvider({required this.localRepositoryInterface});
 
-  void loadTheme() async {
+  Future<void> loadTheme() async {
     final isDark = await localRepositoryInterface.getIsDarkMode();
     updateTheme(isDark);
   }
