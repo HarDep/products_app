@@ -30,37 +30,52 @@ class HomeScreen extends StatelessWidget {
         toolbarHeight: 0,
       ),
       body: SafeArea(
-          child: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-            index: provider.indexSelected,
-            children: [
-              const ProductsScreen(),
-              Text(
-                'current index 2 ${provider.indexSelected}',
-                style: const TextStyle(color: Colors.red),
-              ),
-              CartScreen(
-                goShopping: () {
-                  provider.updateIndex(0);
-                },
-              ),
-              Text(
-                'current index 4 ${provider.indexSelected}',
-                style: const TextStyle(color: Colors.red),
-              ),
-              const ProfileScreen(),
-            ],
-          )),
-          _NavigationBar(
-            index: provider.indexSelected,
-            onIndexSelected: (index) {
-              provider.updateIndex(index);
-            },
-          ),
-        ],
-      )),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Expanded(
+                  child: IndexedStack(
+                  index: provider.indexSelected,
+                  children: [
+                    const ProductsScreen(),
+                    Text(
+                      'current index 2 ${provider.indexSelected}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    CartScreen(
+                      goShopping: () {
+                        provider.updateIndex(0);
+                      },
+                    ),
+                    Text(
+                      'current index 4 ${provider.indexSelected}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const ProfileScreen(),
+                  ],
+                )),
+                _NavigationBar(
+                  index: provider.indexSelected,
+                  onIndexSelected: (index) {
+                    provider.updateIndex(index);
+                  },
+                ),
+              ],
+            ),
+            Positioned.fill(
+              child: provider.userStatus == UserStatus.unidentified? 
+              Container(
+                  color: Colors.black26,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
