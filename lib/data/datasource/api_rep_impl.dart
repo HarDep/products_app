@@ -1,4 +1,6 @@
+import 'package:products_app/data/memory_products.dart';
 import 'package:products_app/domain/exception/auth_exception.dart';
+import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/user.dart';
 import 'package:products_app/domain/repository/api_repository.dart';
 import 'package:products_app/domain/request/login_request.dart';
@@ -40,5 +42,11 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   @override
   Future<void> logout(String token) async {
     await Future.delayed(const Duration(seconds: 1));
+  }
+
+  @override
+  Future<List<Product>> getProducts() async {
+    await Future.delayed(const Duration(seconds: 2));
+    return products;
   }
 }

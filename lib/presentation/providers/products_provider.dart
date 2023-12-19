@@ -8,5 +8,9 @@ class ProductsProvider extends ChangeNotifier {
 
   ProductsProvider({required this.apiRepositoryInterface});
 
-  //void load 
+  void loadProducts() async {
+    final result = await apiRepositoryInterface.getProducts();
+    products = result;
+    notifyListeners();
+  }
 }

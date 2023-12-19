@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
                   child: IndexedStack(
                   index: provider.indexSelected,
                   children: [
-                    const ProductsScreen(),
+                    ProductsScreen.init(context),
                     Text(
                       'current index 2 ${provider.indexSelected}',
                       style: const TextStyle(color: Colors.red),
