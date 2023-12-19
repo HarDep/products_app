@@ -152,10 +152,12 @@ class _NavigationBar extends StatelessWidget {
               ),
               InkWell(
                 onTap: () => onIndexSelected(4),
-                child: provider.user?.image == null ? const SizedBox.shrink() : CircleAvatar( 
-                  //TODO: imagen de persona cuando no hay imagen de usuario
+                child: CircleAvatar(
                   radius: 15,
-                  backgroundImage: AssetImage(provider.user!.image!),
+                  child: ClipOval(
+                    child: provider.user?.image != null? Image.asset(provider.user!.image!, fit: BoxFit.cover,) : 
+                    const Icon(Icons.person_2_outlined),
+                  ),
                 ),
               ),
             ],

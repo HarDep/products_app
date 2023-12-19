@@ -34,21 +34,21 @@ class ProfileScreen extends StatelessWidget {
                         right: 0,
                         left: 0,
                         child: Container(
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.green),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: user.image != null
-                                  ? CircleAvatar(
-                                      radius: 60,
-                                      backgroundImage:
-                                          AssetImage(user.image!), 
-                                          //TODO: ajustar imagen
-                                          //TODO: imagen cuando el usuari no la tiene
-                                    )
-                                  : const SizedBox.shrink(),
-                            )),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.green,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: CircleAvatar(
+                              radius: 60,
+                              child: ClipOval(
+                                child: user.image != null? Image.asset(user.image!, fit: BoxFit.cover,) : 
+                                const Icon(Icons.person_2_outlined),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                       Positioned(
                         top: 105,
