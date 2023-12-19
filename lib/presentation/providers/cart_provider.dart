@@ -7,6 +7,8 @@ class CartProvider extends ChangeNotifier {
   int totalItems = 0;
   double totalPrice = 0;
 
+  //micronotificadores con value notifier?
+
   void add(Product product) {
     bool isFound = false;
     for (final prod in cart) {
@@ -43,8 +45,8 @@ class CartProvider extends ChangeNotifier {
   }
 
   void delete(ProductCart productCart) {
-    totalItems--;
-    totalPrice -= productCart.product.price;
+    totalItems-=productCart.amount;
+    totalPrice -= productCart.product.price*productCart.amount;
     cart.remove(productCart);
     notifyListeners();
   }

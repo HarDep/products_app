@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/repository/api_repository.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,8 @@ class ProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsProvider = Provider.of<ProductsProvider>(context, listen: true);
+    final productsProvider =
+        Provider.of<ProductsProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -44,22 +46,26 @@ class ProductsScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: productsProvider.products.isNotEmpty? 
-            GridView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: productsProvider.products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: 2 / 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  crossAxisCount: 2),
-              itemBuilder: (context, index) {
-                Product product = productsProvider.products[index];
-                return _ItemProduct(
-                  product: product,
-                );
-              },
-            ) : const Center(child: CircularProgressIndicator(),),
+            child: productsProvider.products.isNotEmpty
+                ? GridView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: productsProvider.products.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: 2 / 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      Product product = productsProvider.products[index];
+                      return _ItemProduct(
+                        product: product,
+                      );
+                    },
+                  )
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
           ),
         ],
       ),
@@ -74,6 +80,7 @@ class _ItemProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Card(
       elevation: 5,
       surfaceTintColor: Colors.transparent,
@@ -138,7 +145,9 @@ class _ItemProduct extends StatelessWidget {
             )),
             CustomeButton(
               text: 'Agregar',
-              voidCallback: () {},
+              voidCallback: () {
+                cartProvider.add(product);
+              },
               height: 30,
               textPadding:
                   const EdgeInsets.symmetric(vertical: 4, horizontal: 20),

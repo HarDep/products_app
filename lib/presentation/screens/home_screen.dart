@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/screens/cart_screen.dart';
 import 'package:products_app/presentation/screens/products_screen.dart';
@@ -91,6 +92,7 @@ class _NavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context, listen: true);
+    final cartProvider = Provider.of<CartProvider>(context, listen: true);
     return Padding(
       padding: const EdgeInsets.all(25.0),
       child: DecoratedBox(
@@ -104,31 +106,54 @@ class _NavigationBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                  onPressed: () => onIndexSelected(0),
-                  icon: Icon(
-                      color: index == 0 ? AppColors.green : AppColors.lightGrey,
-                      Icons.home_outlined)),
+                onPressed: () => onIndexSelected(0),
+                icon: Icon(
+                  color: index == 0 ? AppColors.green : AppColors.lightGrey,
+                  Icons.home_outlined,
+                ),
+              ),
               IconButton(
-                  onPressed: () => onIndexSelected(1),
-                  icon: Icon(
-                      color: index == 1 ? AppColors.green : AppColors.lightGrey,
-                      Icons.store_outlined)),
-              CircleAvatar(
-                  radius: 25,
-                  backgroundColor: AppColors.purple,
-                  child: IconButton(
-                      onPressed: () => onIndexSelected(2),
-                      icon: Icon(
+                onPressed: () => onIndexSelected(1),
+                icon: Icon(
+                  color: index == 1 ? AppColors.green : AppColors.lightGrey,
+                  Icons.store_outlined,
+                ),
+              ),
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundColor: AppColors.purple,
+                    child: IconButton(
+                        onPressed: () => onIndexSelected(2),
+                        icon: Icon(
                           color: index == 2 ? AppColors.green : AppColors.white,
-                          Icons.shopping_basket_outlined))),
+                          Icons.shopping_basket_outlined,
+                        ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: cartProvider.totalItems == 0? const SizedBox.shrink() :
+                      CircleAvatar(
+                        radius: 10,
+                        backgroundColor: AppColors.pink,
+                        child: Text('${cartProvider.totalItems}'),
+                      ),
+                  ),
+                ],
+              ),
               IconButton(
-                  onPressed: () => onIndexSelected(3),
-                  icon: Icon(
-                      color: index == 3 ? AppColors.green : AppColors.lightGrey,
-                      Icons.favorite_border_outlined)),
+                onPressed: () => onIndexSelected(3),
+                icon: Icon(
+                  color: index == 3 ? AppColors.green : AppColors.lightGrey,
+                  Icons.favorite_border_outlined,
+                ),
+              ),
               InkWell(
                 onTap: () => onIndexSelected(4),
-                child: provider.user?.image == null ? const SizedBox.shrink() : CircleAvatar(
+                child: provider.user?.image == null ? const SizedBox.shrink() : CircleAvatar( 
+                  //TODO: imagen de persona cuando no hay imagen de usuario
                   radius: 15,
                   backgroundImage: AssetImage(provider.user!.image!),
                 ),

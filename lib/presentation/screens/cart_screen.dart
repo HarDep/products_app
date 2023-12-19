@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
-import 'package:products_app/data/memory_products.dart';
-import 'package:products_app/domain/models/product.dart';
+import 'package:products_app/domain/models/product_cart.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
   final VoidCallback goShopping;
@@ -10,13 +11,17 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
         title: const Text('Carrito'),
       ),
-      body: const _NotEmptyCart(),
-      /* _EmptyCart(action: goShopping,), */
+      body: cartProvider.cart.isNotEmpty
+          ? const _NotEmptyCart()
+          : _EmptyCart(
+              action: goShopping,
+            ),
     );
   }
 }
@@ -26,6 +31,7 @@ class _NotEmptyCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: true);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -38,54 +44,98 @@ class _NotEmptyCart extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 vertical: 20,
               ),
-              itemCount: products.length,
+              itemCount: cartProvider.cart.length,
               scrollDirection: Axis.horizontal,
               itemExtent: 250,
               itemBuilder: (context, index) {
-                Product product = products[index];
+                ProductCart product = cartProvider.cart[index];
                 return _ShoppingProduct(product: product);
               },
             )),
         Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Card(
-                shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                color: Theme.of(context).canvasColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 10,),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [
-                            Text('SubTotal:', style: TextStyle(color: Theme.of(context).iconTheme.color),), 
-                            Text('\$85.00 usd', style: TextStyle(color: Theme.of(context).iconTheme.color),)],),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [
-                            Text('Envio:', style: TextStyle(color: Theme.of(context).iconTheme.color),), 
-                            Text('Gratis', style: TextStyle(color: Theme.of(context).iconTheme.color),)],),
-                          const SizedBox(height: 15,),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [
-                            Text('Total:', style: TextStyle(color: Theme.of(context).iconTheme.color, fontSize: 20, fontWeight: FontWeight.bold),), 
-                            Text('\$85.00 usd', style: TextStyle(color: Theme.of(context).iconTheme.color, fontSize: 20, fontWeight: FontWeight.bold),)],)
-                        ],
-                      ),
-                      )
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              color: Theme.of(context).canvasColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'SubTotal:',
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color),
+                            ),
+                            Text(
+                              '\$${cartProvider.totalPrice.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color),
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Envio:',
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color),
+                            ),
+                            Text(
+                              'Gratis', //TODO: precio envio?
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Total:',
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '\$${cartProvider.totalPrice.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                  color: Theme.of(context).iconTheme.color,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        )
+                      ],
                     ),
-                    CustomeButton(
+                  )),
+                  CustomeButton(
                       textPadding: const EdgeInsets.symmetric(vertical: 17),
                       height: 55,
-                        text: 'Realizar Compra',
-                        voidCallback: () {}
-                    ),
-                  ],
-                ),
+                      text: 'Realizar Compra',
+                      //TODO: realizar compra?
+                      voidCallback: () {}),
+                ],
               ),
             ),
+          ),
         ),
       ],
     );
@@ -93,12 +143,13 @@ class _NotEmptyCart extends StatelessWidget {
 }
 
 class _ShoppingProduct extends StatelessWidget {
-  final Product product;
+  final ProductCart product;
 
   const _ShoppingProduct({required this.product});
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Stack(
@@ -121,7 +172,7 @@ class _ShoppingProduct extends StatelessWidget {
                     child: CircleAvatar(
                         child: ClipOval(
                             child: Image.network(
-                      product.image,
+                      product.product.image,
                       fit: BoxFit.cover,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
@@ -144,7 +195,7 @@ class _ShoppingProduct extends StatelessWidget {
                       child: Column(
                     children: [
                       Text(
-                        product.name,
+                        product.product.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -154,7 +205,7 @@ class _ShoppingProduct extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        product.description,
+                        product.product.description,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -172,16 +223,18 @@ class _ShoppingProduct extends StatelessWidget {
                                   color: AppColors.lightGrey,
                                   borderRadius: BorderRadius.circular(5)),
                               child: InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    cartProvider.decrement(product);
+                                  },
                                   child: const Icon(
                                     Icons.remove,
                                     color: AppColors.purple,
                                   ))),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Text(
-                              '1',
-                              style: TextStyle(
+                              '${product.amount}',
+                              style: const TextStyle(
                                   color: AppColors.lightGrey, fontSize: 17),
                             ),
                           ),
@@ -190,7 +243,9 @@ class _ShoppingProduct extends StatelessWidget {
                                   color: AppColors.purple,
                                   borderRadius: BorderRadius.circular(5)),
                               child: InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    cartProvider.increment(product);
+                                  },
                                   child: const Icon(
                                     Icons.add,
                                     color: AppColors.white,
@@ -199,7 +254,7 @@ class _ShoppingProduct extends StatelessWidget {
                             width: 20,
                           ),
                           Text(
-                            '\$${product.price}',
+                            '\$${product.product.price}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -218,10 +273,16 @@ class _ShoppingProduct extends StatelessWidget {
           ),
           Positioned(
             right: 0,
-              child: CircleAvatar(
-            backgroundColor: AppColors.pink,
-            child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete_outlined)),
-          )),
+            child: CircleAvatar(
+              backgroundColor: AppColors.pink,
+              child: IconButton(
+                onPressed: () {
+                  cartProvider.delete(product);
+                },
+                icon: const Icon(Icons.delete_outlined),
+              ),
+            ),
+          ),
         ],
       ),
     );

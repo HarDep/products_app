@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/login_provider.dart';
 import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
           );
         }),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, themeProvider, __) {

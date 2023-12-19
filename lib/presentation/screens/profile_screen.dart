@@ -43,7 +43,9 @@ class ProfileScreen extends StatelessWidget {
                                   ? CircleAvatar(
                                       radius: 60,
                                       backgroundImage:
-                                          AssetImage(user.image!), //TODO: ajustar imagen
+                                          AssetImage(user.image!), 
+                                          //TODO: ajustar imagen
+                                          //TODO: imagen cuando el usuari no la tiene
                                     )
                                   : const SizedBox.shrink(),
                             )),
