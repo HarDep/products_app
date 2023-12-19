@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
+import 'package:products_app/presentation/providers/login_provider.dart';
 import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/splash_screen.dart';
@@ -25,6 +26,12 @@ class MyApp extends StatelessWidget {
         }),
         ChangeNotifierProvider(create: (context) {
           return SplashProvider(
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+            apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+          );
+        }),
+        ChangeNotifierProvider(create: (context) {
+          return LoginProvider(
             localRepositoryInterface: context.read<LocalRepositoryInterface>(),
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
           );

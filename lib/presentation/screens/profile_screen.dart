@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
+import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -37,10 +38,13 @@ class ProfileScreen extends StatelessWidget {
                                     color: AppColors.green),
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: user.image != null? CircleAvatar(
-                                    radius: 60,
-                                    backgroundImage: AssetImage(user.image!),
-                                  ) : const SizedBox.shrink(),
+                                  child: user.image != null
+                                      ? CircleAvatar(
+                                          radius: 60,
+                                          backgroundImage:
+                                              AssetImage(user.image!),
+                                        )
+                                      : const SizedBox.shrink(),
                                 )),
                           ),
                           Positioned(
@@ -127,7 +131,9 @@ class ProfileScreen extends StatelessWidget {
                                     ),
                                     onChanged: (value) {
                                       provider.updateTheme(value);
-                                      // TODO: actualizar globalmente el tema
+                                      final themeProvider =
+                                          context.read<ThemeProvider>();
+                                      themeProvider.updateTheme(value);
                                     }),
                               ],
                             ),
