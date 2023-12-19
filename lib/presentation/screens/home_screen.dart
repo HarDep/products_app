@@ -16,11 +16,10 @@ class HomeScreen extends StatelessWidget {
       create: (_) => HomeProvider(
         localRepositoryInterface: context.read<LocalRepositoryInterface>(),
         apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
-      )..loadUser(),
+      )..loadUser()..loadTheme(),
       builder: (_, __) => const HomeScreen._(),
     );
   }
-  //int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +113,7 @@ class _NavigationBar extends StatelessWidget {
                       Icons.favorite_border_outlined)),
               InkWell(
                 onTap: () => onIndexSelected(4),
-                child: provider.user!.image == null ? const SizedBox.shrink() : CircleAvatar(
+                child: provider.user?.image == null ? const SizedBox.shrink() : CircleAvatar(
                   radius: 15,
                   backgroundImage: AssetImage(provider.user!.image!),
                 ),

@@ -7,6 +7,7 @@ class HomeProvider extends ChangeNotifier {
   final ApiRepositoryInterface apiRepositoryInterface;
   User? user;
   int indexSelected = 0;
+  bool? isDark;
 
   HomeProvider({
     required this.localRepositoryInterface,
@@ -18,8 +19,25 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void loadTheme() async {
+    isDark = await localRepositoryInterface.getIsDarkMode();
+    notifyListeners();
+  }
+
   void updateIndex(int index) {
     indexSelected = index;
     notifyListeners();
+  }
+
+  void updateTheme(bool isDarkValue) {
+    localRepositoryInterface.saveIsDarkMode(isDarkValue);
+    isDark = isDarkValue;
+    notifyListeners();
+  }
+
+  void logOut() async {
+    final token = await localRepositoryInterface.getToken();
+    await apiRepositoryInterface.logout(token!);
+    await localRepositoryInterface.cleanInfo();
   }
 }
