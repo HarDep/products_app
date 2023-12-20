@@ -79,6 +79,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
     await apiRepositoryInterface.buyProducts(cart);
     cart.clear();
+    totalItems = 0;
+    totalPrice = 0;
     localRepositoryInterface.saveCart(cart);
     state = ProductsState.inCart;
     notifyListeners();
