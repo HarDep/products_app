@@ -37,7 +37,11 @@ class MyApp extends StatelessWidget {
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
           );
         }),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (context) => CartProvider(
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+            apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+          )..loadCart(),
+        ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, themeProvider, __) {

@@ -130,8 +130,20 @@ class _NotEmptyCart extends StatelessWidget {
                       textPadding: const EdgeInsets.symmetric(vertical: 17),
                       height: 55,
                       text: 'Realizar Compra',
-                      //TODO: realizar compra?
-                      voidCallback: () {}),
+                      voidCallback: () async {
+                        await cartProvider.buyProducts();         
+                        final snackBar = SnackBar(
+                          content: const Text('Compra realizada con exito!', style: TextStyle(color: AppColors.white),),
+                          action: SnackBarAction(
+                            label: 'Ok',
+                            onPressed: () {},
+                          ),
+                          duration: const Duration(seconds: 3),
+                          backgroundColor: AppColors.green,
+                        );
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }),
                 ],
               ),
             ),

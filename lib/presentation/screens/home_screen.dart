@@ -17,7 +17,9 @@ class HomeScreen extends StatelessWidget {
       create: (_) => HomeProvider(
         localRepositoryInterface: context.read<LocalRepositoryInterface>(),
         apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
-      )..loadUser()..loadTheme(),
+      )
+        ..loadUser()
+        ..loadTheme(),
       builder: (_, __) => const HomeScreen._(),
     );
   }
@@ -25,6 +27,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context, listen: true);
+    final cartProvider = Provider.of<CartProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         shape: const Border(),
@@ -65,7 +68,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             Positioned.fill(
-              child: provider.userStatus == UserStatus.unidentified? 
+              child: provider.userStatus == UserStatus.unidentified || cartProvider.state == ProductsState.inPurchase? 
               Container(
                   color: Colors.black26,
                   child: const Center(
@@ -125,21 +128,22 @@ class _NavigationBar extends StatelessWidget {
                     radius: 25,
                     backgroundColor: AppColors.purple,
                     child: IconButton(
-                        onPressed: () => onIndexSelected(2),
-                        icon: Icon(
-                          color: index == 2 ? AppColors.green : AppColors.white,
-                          Icons.shopping_basket_outlined,
-                        ),
+                      onPressed: () => onIndexSelected(2),
+                      icon: Icon(
+                        color: index == 2 ? AppColors.green : AppColors.white,
+                        Icons.shopping_basket_outlined,
+                      ),
                     ),
                   ),
                   Positioned(
                     right: 0,
-                    child: cartProvider.totalItems == 0? const SizedBox.shrink() :
-                      CircleAvatar(
-                        radius: 10,
-                        backgroundColor: AppColors.pink,
-                        child: Text('${cartProvider.totalItems}'),
-                      ),
+                    child: cartProvider.totalItems == 0
+                        ? const SizedBox.shrink()
+                        : CircleAvatar(
+                            radius: 10,
+                            backgroundColor: AppColors.pink,
+                            child: Text('${cartProvider.totalItems}'),
+                          ),
                   ),
                 ],
               ),
@@ -155,8 +159,12 @@ class _NavigationBar extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 15,
                   child: ClipOval(
-                    child: provider.user?.image != null? Image.asset(provider.user!.image!, fit: BoxFit.cover,) : 
-                    const Icon(Icons.person_2_outlined),
+                    child: provider.user?.image != null
+                        ? Image.asset(
+                            provider.user!.image!,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(Icons.person_2_outlined),
                   ),
                 ),
               ),
