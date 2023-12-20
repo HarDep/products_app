@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
@@ -167,6 +168,9 @@ class ProfileScreen extends StatelessWidget {
                           onPressed: () async {
                             await provider.logOut();
                             await themeProvider.loadTheme();
+                            // ignore: use_build_context_synchronously
+                            final cartProvider = context.read<CartProvider>();
+                            cartProvider.clearCart();
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
