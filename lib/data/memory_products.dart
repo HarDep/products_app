@@ -1,5 +1,7 @@
+import 'package:products_app/domain/models/ingredient.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/product_category.dart';
+import 'package:products_app/domain/models/product_details.dart';
 
 final List<Product> products = [
   Product(
@@ -26,6 +28,16 @@ final List<Product> products = [
       image:
           'https://media-cdn.tripadvisor.com/media/photo-p/0f/92/8b/de/wagyu-beast-burger.jpg'),
 ];
+
+final List<ProductDetails> productDetails = products
+  .map((elm) => ProductDetails(product: elm, ingredients: List<Ingredient>.of([
+      Ingredient(name: 'Pan', image: 'https://th.bing.com/th/id/OIP.ol3cym5UaXAsOf1aSsg1wwHaEb?rs=1&pid=ImgDetMain'),
+      Ingredient(name: 'Carne', image: 'https://th.bing.com/th/id/R.6eab23a4b8e8542ef9baf4f320db1941?rik=1ZGAWeegqAT%2b0g&pid=ImgRaw&r=0'),
+      Ingredient(name: 'Queso', image: 'https://th.bing.com/th/id/OIP.ojLjkUPmcuy1dm7DyKjfFAHaHa?rs=1&pid=ImgDetMain'),
+      Ingredient(name: 'Lechuga', image: 'https://bolcereales.com.ar/wp-content/uploads/2019/12/lechuga-plato.jpg'),
+    ]),
+  ),
+).toList();
 
 final List<ProductCategory> categories = [
   ProductCategory(name: 'Pizza', image: 'assets/pizza.png'),

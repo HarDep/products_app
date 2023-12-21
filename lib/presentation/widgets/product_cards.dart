@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/data/memory_products.dart';
 import 'package:products_app/domain/models/product.dart';
+import 'package:products_app/domain/models/product_details.dart';
+import 'package:products_app/presentation/screens/product_details_screen.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
 
@@ -34,8 +37,11 @@ class VerticalProductCard extends StatelessWidget {
                     height: 20,
                   ),
                   Expanded(
-                    child: CircleAvatar(
-                      child: OvalAvatar(image: product.image),
+                    child: Hero(
+                      tag: 'vert${product.name}',
+                      child: CircleAvatar(
+                        child: OvalAvatar(image: product.image),
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -53,7 +59,7 @@ class VerticalProductCard extends StatelessWidget {
                       const SizedBox(
                         height: 5,
                       ),
-                      PriceHeroProductItems(product: product),
+                      PriceHeroProductItems(product: product, isVerical: true,),
                     ],
                   )),
                 ],
@@ -94,8 +100,11 @@ class HorizontalProductCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: SquareAvatar(
-                        image: product.image, circularRadius: 10.0),
+                    child: Hero(
+                      tag: 'hor${product.name}',
+                      child: SquareAvatar(
+                          image: product.image, circularRadius: 10.0),
+                    ),
                   ),
                   const SizedBox(
                     width: 10,
@@ -104,7 +113,9 @@ class HorizontalProductCard extends StatelessWidget {
                       child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 15,),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       NameDescriptionsProductItems(
                         product: product,
                         textsAlign: TextAlign.start,
@@ -114,7 +125,7 @@ class HorizontalProductCard extends StatelessWidget {
                       const SizedBox(
                         height: 5,
                       ),
-                      PriceHeroProductItems(product: product),
+                      PriceHeroProductItems(product: product, isVerical: false,),
                     ],
                   )),
                 ],
@@ -130,7 +141,8 @@ class HorizontalProductCard extends StatelessWidget {
 
 class PriceHeroProductItems extends StatelessWidget {
   final Product product;
-  const PriceHeroProductItems({super.key, required this.product});
+  final bool isVerical;
+  const PriceHeroProductItems({super.key, required this.product, required this.isVerical});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +153,12 @@ class PriceHeroProductItems extends StatelessWidget {
           price: '\$${product.price.toStringAsFixed(1)}',
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            ProductDetails details = productDetails
+                .firstWhere((elm) => elm.product.name == product.name);
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => ProductDetailScreen(productDetails: details, isVertical: isVerical)));
+          },
           icon: const Icon(
             Icons.chevron_right_outlined,
             color: AppColors.green,
