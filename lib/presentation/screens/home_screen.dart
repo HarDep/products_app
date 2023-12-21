@@ -3,6 +3,7 @@ import 'package:products_app/configs/colors.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/screens/cart_screen.dart';
+import 'package:products_app/presentation/screens/principal_screen.dart';
 import 'package:products_app/presentation/screens/products_screen.dart';
 import 'package:products_app/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -42,14 +43,11 @@ class HomeScreen extends StatelessWidget {
                   child: IndexedStack(
                   index: provider.indexSelected,
                   children: [
+                    const PrincipalScreen(),
                     ProductsScreen.init(context),
-                    Text(
-                      'current index 2 ${provider.indexSelected}',
-                      style: const TextStyle(color: Colors.red),
-                    ),
                     CartScreen(
                       goShopping: () {
-                        provider.updateIndex(0);
+                        provider.updateIndex(1);
                       },
                     ),
                     Text(

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/repository/api_repository.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
+import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class ProductsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
-        title: const Text('Inicio'),
+        title: const Text('Productos'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -50,12 +51,12 @@ class ProductsScreen extends StatelessWidget {
                 ? GridView.builder(
                     padding: const EdgeInsets.all(20),
                     itemCount: productsProvider.products.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: 2 / 3,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            crossAxisCount: 2),
+                    gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 2 / 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount: 2,
+                    ),
                     itemBuilder: (context, index) {
                       Product product = productsProvider.products[index];
                       return _ItemProduct(
@@ -92,56 +93,14 @@ class _ItemProduct extends StatelessWidget {
           children: [
             Expanded(
               child: CircleAvatar(
-                child: ClipOval(
-                  child: Image.network(
-                    product.image,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                child: OvalAvatar(image: product.image),
               ),
             ),
             Expanded(
                 child: Column(
               children: [
-                Text(
-                  product.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).cardColor,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  product.description,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      const TextStyle(fontSize: 10, color: AppColors.lightGrey),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  '\$${product.price} USD',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).iconTheme.color,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
+                NameDescriptionsProductItems(product: product),
+                PriceProductItem(price: '\$${product.price.toStringAsFixed(1)} USD', color: Theme.of(context).iconTheme.color!),
               ],
             )),
             CustomeButton(
