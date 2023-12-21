@@ -3,10 +3,14 @@ import 'package:products_app/configs/colors.dart';
 import 'package:products_app/presentation/providers/login_provider.dart';
 import 'package:products_app/presentation/screens/home_screen.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+  });
 
   void doLogin(BuildContext context) async {
     final provider = context.read<LoginProvider>();
@@ -19,14 +23,8 @@ class LoginScreen extends StatelessWidget {
           MaterialPageRoute(builder: (_) => HomeScreen.init(context)));
       return;
     }
-    final snackBar = SnackBar(
-      content: const Text('Usuario y/o contraseña incorrectos!', style: TextStyle(color: AppColors.white),),
-      action: SnackBarAction(
-        label: 'Ok',
-        onPressed: () {},
-      ),
-      duration: const Duration(seconds: 2),
-      backgroundColor: Colors.redAccent,
+    final SnackBar snackBar = CustomeSnackBar.getSnackBar(
+      text: 'Usuario y/o contraseña incorrectos!',
     );
     // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -155,14 +153,9 @@ class LoginScreen extends StatelessWidget {
             ],
           ),
           Positioned.fill(
-            child: loginProvider.loginState == LoginState.loading? 
-            Container(
-                color: Colors.black26,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            : const SizedBox.shrink(),
+            child: loginProvider.loginState == LoginState.loading
+                ? const ScreenLoading()
+                : const SizedBox.shrink(),
           ),
         ],
       ),

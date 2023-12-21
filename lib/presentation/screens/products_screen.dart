@@ -5,6 +5,7 @@ import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
 
@@ -64,9 +65,7 @@ class ProductsScreen extends StatelessWidget {
                       );
                     },
                   )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                : const ListLoading(),
           ),
         ],
       ),

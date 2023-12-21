@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/data/memory_products.dart';
 import 'package:products_app/domain/models/product.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
 
 class PrincipalScreen extends StatelessWidget {
@@ -87,7 +88,7 @@ class _Categories extends StatelessWidget {
           ),
           SizedBox(
             height: 100,
-            child: ListView.builder(
+            child: categories.length > 1? ListView.builder(
               itemCount: categories.length,
               scrollDirection: Axis.horizontal,
               itemExtent: 100,
@@ -96,7 +97,7 @@ class _Categories extends StatelessWidget {
                   index: index,
                 );
               },
-            ),
+            ) : const ListLoading(),
           ),
         ],
       ),
@@ -176,7 +177,7 @@ class _SectionProducts extends StatelessWidget {
           ),
           SizedBox(
             height: cartHeight,
-            child: ListView.builder(
+            child: productsList.isNotEmpty? ListView.builder(
               itemCount: productsList.length,
               scrollDirection: Axis.horizontal,
               itemExtent: itemExtent,
@@ -185,7 +186,7 @@ class _SectionProducts extends StatelessWidget {
                 return isVericalCart? VerticalProductCard(product: product, rightPadding: 8.0,) : 
                 HorizontalProductCard(product: product, rightPadding: 8.0,);
               },
-            ),
+            ): const ListLoading(),
           ),
         ],
       ),

@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product_cart.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
+import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
-  final VoidCallback goShopping;
-  const CartScreen({super.key, required this.goShopping});
+  const CartScreen({super.key, });
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +23,7 @@ class CartScreen extends StatelessWidget {
       ),
       body: cartProvider.cart.isNotEmpty
           ? const _NotEmptyCart()
-          : _EmptyCart(
-              action: goShopping,
-            ),
+          : const _EmptyCart(),
     );
   }
 }
@@ -41,19 +41,19 @@ class _NotEmptyCart extends StatelessWidget {
           height: 20,
         ),
         Expanded(
-            flex: 3,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-              ),
-              itemCount: cartProvider.cart.length,
-              scrollDirection: Axis.horizontal,
-              itemExtent: 250,
-              itemBuilder: (context, index) {
-                ProductCart product = cartProvider.cart[index];
-                return _ShoppingProduct(product: product);
-              },
+          flex: 3,
+          child: cartProvider.cart.isNotEmpty? ListView.builder(
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
             ),
+            itemCount: cartProvider.cart.length,
+            scrollDirection: Axis.horizontal,
+            itemExtent: 250,
+            itemBuilder: (context, index) {
+              ProductCart product = cartProvider.cart[index];
+              return _ShoppingProduct(product: product);
+            },
+          ) : const ListLoading(),
         ),
         Expanded(
           flex: 2,
@@ -134,15 +134,11 @@ class _NotEmptyCart extends StatelessWidget {
                       height: 55,
                       text: 'Realizar Compra',
                       voidCallback: () async {
-                        await cartProvider.buyProducts();         
-                        final snackBar = SnackBar(
-                          content: const Text('Compra realizada con exito!', style: TextStyle(color: AppColors.white),),
-                          action: SnackBarAction(
-                            label: 'Ok',
-                            onPressed: () {},
-                          ),
-                          duration: const Duration(seconds: 3),
+                        await cartProvider.buyProducts();
+                        final snackBar = CustomeSnackBar.getSnackBar(
+                          text: 'Compra realizada con exito!',
                           backgroundColor: AppColors.green,
+                          seconds: 3,
                         );
                         // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -236,7 +232,9 @@ class _ShoppingProduct extends StatelessWidget {
                           const SizedBox(
                             width: 20,
                           ),
-                          PriceProductItem(price: '\$${product.product.price.toStringAsFixed(1)}'),
+                          PriceProductItem(
+                              price:
+                                  '\$${product.product.price.toStringAsFixed(1)}'),
                         ],
                       ),
                     ],
@@ -264,10 +262,11 @@ class _ShoppingProduct extends StatelessWidget {
 }
 
 class _EmptyCart extends StatelessWidget {
-  final VoidCallback action;
-  const _EmptyCart({required this.action});
+  const _EmptyCart();
   @override
   Widget build(BuildContext context) {
+    final HomeProvider homeProvider =
+        Provider.of<HomeProvider>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -294,7 +293,9 @@ class _EmptyCart extends StatelessWidget {
             child: ElevatedButton(
           style: const ButtonStyle(
               backgroundColor: MaterialStatePropertyAll(AppColors.purple)),
-          onPressed: action,
+          onPressed: () {
+            homeProvider.updateIndex(1);
+          },
           child: const Text(
             'Ir a comprar',
             style: TextStyle(color: AppColors.white),

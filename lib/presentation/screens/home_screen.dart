@@ -6,6 +6,7 @@ import 'package:products_app/presentation/screens/cart_screen.dart';
 import 'package:products_app/presentation/screens/principal_screen.dart';
 import 'package:products_app/presentation/screens/products_screen.dart';
 import 'package:products_app/presentation/screens/profile_screen.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/repository/repositories.dart';
@@ -45,11 +46,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     const PrincipalScreen(),
                     ProductsScreen.init(context),
-                    CartScreen(
-                      goShopping: () {
-                        provider.updateIndex(1);
-                      },
-                    ),
+                    const CartScreen(),
                     Text(
                       'current index 4 ${provider.indexSelected}',
                       style: const TextStyle(color: Colors.red),
@@ -67,12 +64,7 @@ class HomeScreen extends StatelessWidget {
             ),
             Positioned.fill(
               child: provider.userStatus == UserStatus.unidentified || cartProvider.state == ProductsState.inPurchase? 
-              Container(
-                  color: Colors.black26,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
+              const ScreenLoading()
               : const SizedBox.shrink(),
             ),
           ],
