@@ -148,7 +148,7 @@ class _Category extends StatelessWidget {
 class _SectionProducts extends StatelessWidget {
   final List<Product> productsList;
   final bool isVericalCart;
-  final String title;
+  final String title; //titulo debe ser unico
   final double cartHeight;
   final double itemExtent;
   const _SectionProducts({
@@ -183,8 +183,8 @@ class _SectionProducts extends StatelessWidget {
               itemExtent: itemExtent,
               itemBuilder: (context, index) {
                 Product product = productsList[index];
-                return isVericalCart? VerticalProductCard(product: product, rightPadding: 8.0,) : 
-                HorizontalProductCard(product: product, rightPadding: 8.0,);
+                return isVericalCart? VerticalProductCard(product: product, rightPadding: 8.0, tagPrefix: title,) : 
+                HorizontalProductCard(product: product, rightPadding: 8.0, tagPrefix: title,);
               },
             ): const ListLoading(),
           ),

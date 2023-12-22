@@ -5,7 +5,7 @@ import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
-import 'package:products_app/presentation/widgets/loading_widgets.dart';
+import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
 
@@ -30,44 +30,16 @@ class ProductsScreen extends StatelessWidget {
         toolbarHeight: 80,
         title: const Text('Productos'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'Productos',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Theme.of(context).cardColor),
-            ),
-          ),
-          Expanded(
-            child: productsProvider.products.isNotEmpty
-                ? GridView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: productsProvider.products.length,
-                    gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 2 / 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      crossAxisCount: 2,
-                    ),
-                    itemBuilder: (context, index) {
-                      Product product = productsProvider.products[index];
-                      return _ItemProduct(
-                        product: product,
-                      );
-                    },
-                  )
-                : const ListLoading(),
-          ),
-        ],
+      body: GridViewList(
+        title: 'Productos', 
+        conditionList: productsProvider.products.isNotEmpty, 
+        itemsLength: productsProvider.products.length, 
+        itemBuild: (context, index) {
+          Product product = productsProvider.products[index];
+          return _ItemProduct(
+            product: product,
+          );
+        },
       ),
     );
   }

@@ -10,9 +10,13 @@ import 'package:products_app/presentation/widgets/product_items.dart';
 class VerticalProductCard extends StatelessWidget {
   final Product product;
   final double rightPadding;
+  final String tagPrefix;
 
   const VerticalProductCard(
-      {super.key, required this.product, required this.rightPadding});
+      {super.key,
+      required this.product,
+      required this.rightPadding,
+      required this.tagPrefix});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +42,7 @@ class VerticalProductCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: Hero(
-                      tag: 'vert${product.name}',
+                      tag: '$tagPrefix${product.name}',
                       child: CircleAvatar(
                         child: OvalAvatar(image: product.image),
                       ),
@@ -59,7 +63,10 @@ class VerticalProductCard extends StatelessWidget {
                       const SizedBox(
                         height: 5,
                       ),
-                      PriceHeroProductItems(product: product, isVerical: true,),
+                      PriceHeroProductItems(
+                        product: product,
+                        heroTag: '$tagPrefix${product.name}',
+                      ),
                     ],
                   )),
                 ],
@@ -76,9 +83,10 @@ class VerticalProductCard extends StatelessWidget {
 class HorizontalProductCard extends StatelessWidget {
   final Product product;
   final double rightPadding;
+  final String tagPrefix;
 
   const HorizontalProductCard(
-      {super.key, required this.product, required this.rightPadding});
+      {super.key, required this.product, required this.rightPadding, required this.tagPrefix});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +109,7 @@ class HorizontalProductCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Hero(
-                      tag: 'hor${product.name}',
+                      tag: '$tagPrefix${product.name}',
                       child: SquareAvatar(
                           image: product.image, circularRadius: 10.0),
                     ),
@@ -125,7 +133,10 @@ class HorizontalProductCard extends StatelessWidget {
                       const SizedBox(
                         height: 5,
                       ),
-                      PriceHeroProductItems(product: product, isVerical: false,),
+                      PriceHeroProductItems(
+                        product: product,
+                        heroTag: '$tagPrefix${product.name}',
+                      ),
                     ],
                   )),
                 ],
@@ -141,8 +152,9 @@ class HorizontalProductCard extends StatelessWidget {
 
 class PriceHeroProductItems extends StatelessWidget {
   final Product product;
-  final bool isVerical;
-  const PriceHeroProductItems({super.key, required this.product, required this.isVerical});
+  final String heroTag;
+  const PriceHeroProductItems(
+      {super.key, required this.product, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +169,8 @@ class PriceHeroProductItems extends StatelessWidget {
             ProductDetails details = productDetails
                 .firstWhere((elm) => elm.product.name == product.name);
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => ProductDetailScreen(productDetails: details, isVertical: isVerical)));
+                builder: (_) => ProductDetailScreen(
+                    productDetails: details, tag: heroTag,)));
           },
           icon: const Icon(
             Icons.chevron_right_outlined,

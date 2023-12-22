@@ -8,13 +8,12 @@ import 'package:products_app/presentation/widgets/custome_button.dart';
 const double radius = 50;
 
 class ProductDetailScreen extends StatelessWidget {
-  //final double radius;
   final ProductDetails productDetails;
-  final bool isVertical;
+  final String tag;
   const ProductDetailScreen({
     super.key,
     required this.productDetails,
-    required this.isVertical,
+    required this.tag,
   });
 
   @override
@@ -55,7 +54,7 @@ class ProductDetailScreen extends StatelessWidget {
             right: 0,
             child: Hero(
               tag:
-                  '${isVertical ? 'vert' : 'hor'}${productDetails.product.name}',
+                  tag,
               child: NetworkImageWithCircularProgress(
                   image: productDetails.product.image),
             ),
@@ -200,8 +199,14 @@ class _Ingredient extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: SquareAvatar(image: ingredient.image, circularRadius: 10.0),),
-          Text(ingredient.name, style: const TextStyle(color: AppColors.lightGrey), textAlign: TextAlign.center,),
+          Expanded(
+            child: SquareAvatar(image: ingredient.image, circularRadius: 10.0),
+          ),
+          Text(
+            ingredient.name,
+            style: const TextStyle(color: AppColors.lightGrey),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
