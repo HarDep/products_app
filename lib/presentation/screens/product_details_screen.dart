@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/ingredient.dart';
-import 'package:products_app/domain/models/product_details.dart';
+import 'package:products_app/domain/models/product_info.dart';
+import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
+import 'package:products_app/presentation/widgets/product_cards.dart';
+import 'package:provider/provider.dart';
 
 const double radius = 50;
 
 class ProductDetailScreen extends StatelessWidget {
-  final ProductDetails productDetails;
   final String tag;
   const ProductDetailScreen({
     super.key,
-    required this.productDetails,
     required this.tag,
   });
 
   @override
   Widget build(BuildContext context) {
+    final PrincipalProvider principalProvider = Provider.of<PrincipalProvider>(context);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          productDetails.product.name,
+          principalProvider.currentInfo!.product.name,
           style: const TextStyle(
             color: AppColors.white,
           ),
@@ -53,10 +56,9 @@ class ProductDetailScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: Hero(
-              tag:
-                  tag,
+              tag: tag,
               child: NetworkImageWithCircularProgress(
-                  image: productDetails.product.image),
+                  image: principalProvider.currentInfo!.product.image),
             ),
           ),
           Positioned(
@@ -72,7 +74,7 @@ class ProductDetailScreen extends StatelessWidget {
                 color: Theme.of(context).scaffoldBackgroundColor,
               ),
               child: _ItemsDetails(
-                productDetails: productDetails,
+                product: principalProvider.currentInfo!,
               ),
             ),
           ),
@@ -81,9 +83,9 @@ class ProductDetailScreen extends StatelessWidget {
             top: size.height / 2 - radius,
             child: CircleAvatar(
               radius: radius / 2,
-              backgroundColor: AppColors.pink,
+              backgroundColor: principalProvider.currentInfo!.isFavorite? AppColors.pink : AppColors.lightGrey,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () => setIsFavoriteProduct(principalProvider.currentInfo!, context),
                 icon: const Icon(
                   Icons.favorite_border,
                   color: AppColors.white,
@@ -99,11 +101,13 @@ class ProductDetailScreen extends StatelessWidget {
 }
 
 class _ItemsDetails extends StatelessWidget {
-  final ProductDetails productDetails;
-  const _ItemsDetails({required this.productDetails});
+  final ProductInfo product;
+  const _ItemsDetails({required this.product});
 
   @override
   Widget build(BuildContext context) {
+    final PrincipalProvider principalProvider =
+        Provider.of(context, listen: true);
     return Padding(
       padding:
           const EdgeInsets.only(top: radius, left: 30, right: 30, bottom: 30),
@@ -122,7 +126,7 @@ class _ItemsDetails extends StatelessWidget {
             height: 10,
           ),
           Text(
-            productDetails.product.description,
+            product.product.description,
             style: const TextStyle(color: AppColors.lightGrey),
           ),
           const Spacer(),
@@ -138,10 +142,12 @@ class _ItemsDetails extends StatelessWidget {
                   color: AppColors.green,
                 ),
               ),
-              Text(
-                '${productDetails.ingredients.length} ingredientes',
-                style: const TextStyle(color: AppColors.lightGrey),
-              ),
+              principalProvider.currentDetails != null
+                  ? Text(
+                      '${principalProvider.currentDetails!.ingredients.length} ingredientes',
+                      style: const TextStyle(color: AppColors.lightGrey),
+                    )
+                  : const CircleAvatar(),
             ],
           ),
           const SizedBox(
@@ -149,15 +155,19 @@ class _ItemsDetails extends StatelessWidget {
           ),
           SizedBox(
             height: 120,
-            child: ListView.builder(
-              itemCount: productDetails.ingredients.length,
-              scrollDirection: Axis.horizontal,
-              itemExtent: 120,
-              itemBuilder: (_, index) {
-                Ingredient ingredient = productDetails.ingredients[index];
-                return _Ingredient(ingredient: ingredient);
-              },
-            ),
+            child: principalProvider.currentDetails != null
+                ? ListView.builder(
+                    itemCount:
+                        principalProvider.currentDetails!.ingredients.length,
+                    scrollDirection: Axis.horizontal,
+                    itemExtent: 120,
+                    itemBuilder: (_, index) {
+                      Ingredient ingredient =
+                          principalProvider.currentDetails!.ingredients[index];
+                      return _Ingredient(ingredient: ingredient);
+                    },
+                  )
+                : const ListLoading(),
           ),
           const Spacer(),
           Row(
@@ -171,7 +181,7 @@ class _ItemsDetails extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
               ),
               Text(
-                '\$${productDetails.product.price.toStringAsFixed(2)}',
+                '\$${product.product.price.toStringAsFixed(2)}',
                 textAlign: TextAlign.start,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,

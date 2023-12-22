@@ -14,10 +14,22 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   void setFavoriteProduct(ProductInfo product) {
-    product.isFavorite = !product.isFavorite;
-    if (!product.isFavorite) {
-      favorites.remove(product);
+    bool isInFavorites = favorites
+        .any((element) => element.product.name == product.product.name);
+    if (!product.isFavorite && isInFavorites) {
+      ProductInfo favorite = favorites.firstWhere(
+          (element) => element.product.name == product.product.name);
+      favorites.remove(favorite);
     }
+    if (!isInFavorites && product.isFavorite) {
+      favorites.add(product);
+    }
+    notifyListeners();
+    localRepositoryInterface.saveFavorites(favorites);
+  }
+
+  void clearFavorites() {
+    favorites.clear();
     notifyListeners();
   }
 }

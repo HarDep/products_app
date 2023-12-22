@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
-import 'package:products_app/data/memory_products.dart';
-import 'package:products_app/domain/models/product.dart';
+import 'package:products_app/domain/models/product_category.dart';
+import 'package:products_app/domain/models/product_info.dart';
+import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/screens/search_field.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
+import 'package:provider/provider.dart';
 
 class PrincipalScreen extends StatelessWidget {
   const PrincipalScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final PrincipalProvider principalProvider =
+        Provider.of(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
         leadingWidth: 130,
         title: const Text('Inicio'),
-        leading: const SearchField(tag: 'principal',),
+        leading: const SearchField(
+          tag: 'principal',
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),
@@ -38,17 +44,17 @@ class PrincipalScreen extends StatelessWidget {
           children: [
             const _Categories(),
             _SectionProducts(
-              productsList: products, 
-              title: 'Productos populares', 
-              isVericalCart: true, 
-              cartHeight: 250, 
+              productsList: principalProvider.famous,
+              title: 'Productos populares',
+              isVericalCart: true,
+              cartHeight: 250,
               itemExtent: 170,
             ),
             _SectionProducts(
-              productsList: products, 
-              title: 'Recomendados', 
-              isVericalCart: false, 
-              cartHeight: 170, 
+              productsList: principalProvider.recommended,
+              title: 'Recomendados',
+              isVericalCart: false,
+              cartHeight: 170,
               itemExtent: 270,
             ),
           ],
@@ -63,6 +69,8 @@ class _Categories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PrincipalProvider principalProvider =
+        Provider.of(context, listen: true);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
       child: Column(
@@ -91,16 +99,20 @@ class _Categories extends StatelessWidget {
           ),
           SizedBox(
             height: 100,
-            child: categories.length > 1? ListView.builder(
-              itemCount: categories.length,
-              scrollDirection: Axis.horizontal,
-              itemExtent: 100,
-              itemBuilder: (context, index) {
-                return _Category(
-                  index: index,
-                );
-              },
-            ) : const ListLoading(),
+            child: principalProvider.categories.length > 1
+                ? ListView.builder(
+                    itemCount: principalProvider.categories.length,
+                    scrollDirection: Axis.horizontal,
+                    itemExtent: 100,
+                    itemBuilder: (context, index) {
+                      ProductCategory category =
+                          principalProvider.categories[index];
+                      return _Category(
+                        category: category,
+                      );
+                    },
+                  )
+                : const ListLoading(),
           ),
         ],
       ),
@@ -109,9 +121,9 @@ class _Categories extends StatelessWidget {
 }
 
 class _Category extends StatelessWidget {
-  final int index;
+  final ProductCategory category;
   const _Category({
-    required this.index,
+    required this.category,
   });
 
   @override
@@ -134,12 +146,12 @@ class _Category extends StatelessWidget {
                 backgroundColor: Theme.of(context).canvasColor,
               ),
               child: Image.asset(
-                categories[index].image,
+                category.image,
               ),
             ),
           ),
           Text(
-            categories[index].name,
+            category.name,
             style: const TextStyle(color: AppColors.green),
           ),
         ],
@@ -149,7 +161,7 @@ class _Category extends StatelessWidget {
 }
 
 class _SectionProducts extends StatelessWidget {
-  final List<Product> productsList;
+  final List<ProductInfo> productsList;
   final bool isVericalCart;
   final String title; //titulo debe ser unico
   final double cartHeight;
@@ -180,16 +192,27 @@ class _SectionProducts extends StatelessWidget {
           ),
           SizedBox(
             height: cartHeight,
-            child: productsList.isNotEmpty? ListView.builder(
-              itemCount: productsList.length,
-              scrollDirection: Axis.horizontal,
-              itemExtent: itemExtent,
-              itemBuilder: (context, index) {
-                Product product = productsList[index];
-                return isVericalCart? VerticalProductCard(product: product, rightPadding: 8.0, tagPrefix: title,) : 
-                HorizontalProductCard(product: product, rightPadding: 8.0, tagPrefix: title,);
-              },
-            ): const ListLoading(),
+            child: productsList.isNotEmpty
+                ? ListView.builder(
+                    itemCount: productsList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemExtent: itemExtent,
+                    itemBuilder: (context, index) {
+                      ProductInfo product = productsList[index];
+                      return isVericalCart
+                          ? VerticalProductCard(
+                              product: product,
+                              rightPadding: 8.0,
+                              tagPrefix: title,
+                            )
+                          : HorizontalProductCard(
+                              product: product,
+                              rightPadding: 8.0,
+                              tagPrefix: title,
+                            );
+                    },
+                  )
+                : const ListLoading(),
           ),
         ],
       ),

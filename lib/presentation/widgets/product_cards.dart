@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
-import 'package:products_app/data/memory_products.dart';
-import 'package:products_app/domain/models/product.dart';
-import 'package:products_app/domain/models/product_details.dart';
+import 'package:products_app/domain/models/product_info.dart';
+import 'package:products_app/presentation/providers/favorites_provider.dart';
+import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/screens/product_details_screen.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
+import 'package:provider/provider.dart';
 
 class VerticalProductCard extends StatelessWidget {
-  final Product product;
+  final ProductInfo product;
   final double rightPadding;
   final String tagPrefix;
 
@@ -42,9 +43,9 @@ class VerticalProductCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: Hero(
-                      tag: '$tagPrefix${product.name}',
+                      tag: '$tagPrefix${product.product.name}',
                       child: CircleAvatar(
-                        child: OvalAvatar(image: product.image),
+                        child: OvalAvatar(image: product.product.image),
                       ),
                     ),
                   ),
@@ -55,7 +56,7 @@ class VerticalProductCard extends StatelessWidget {
                       child: Column(
                     children: [
                       NameDescriptionsProductItems(
-                        product: product,
+                        product: product.product,
                         textsAlign: TextAlign.start,
                         nameMaxLines: 1,
                         descriptionMaxLines: 2,
@@ -65,7 +66,7 @@ class VerticalProductCard extends StatelessWidget {
                       ),
                       PriceHeroProductItems(
                         product: product,
-                        heroTag: '$tagPrefix${product.name}',
+                        heroTag: '$tagPrefix${product.product.name}',
                       ),
                     ],
                   )),
@@ -73,7 +74,9 @@ class VerticalProductCard extends StatelessWidget {
               ),
             ),
           ),
-          const FavoriteIcon(),
+          FavoriteIconPositioned(
+            product: product,
+          ),
         ],
       ),
     );
@@ -81,12 +84,15 @@ class VerticalProductCard extends StatelessWidget {
 }
 
 class HorizontalProductCard extends StatelessWidget {
-  final Product product;
+  final ProductInfo product;
   final double rightPadding;
   final String tagPrefix;
 
   const HorizontalProductCard(
-      {super.key, required this.product, required this.rightPadding, required this.tagPrefix});
+      {super.key,
+      required this.product,
+      required this.rightPadding,
+      required this.tagPrefix});
 
   @override
   Widget build(BuildContext context) {
@@ -109,9 +115,9 @@ class HorizontalProductCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Hero(
-                      tag: '$tagPrefix${product.name}',
+                      tag: '$tagPrefix${product.product.name}',
                       child: SquareAvatar(
-                          image: product.image, circularRadius: 10.0),
+                          image: product.product.image, circularRadius: 10.0),
                     ),
                   ),
                   const SizedBox(
@@ -125,7 +131,7 @@ class HorizontalProductCard extends StatelessWidget {
                         height: 15,
                       ),
                       NameDescriptionsProductItems(
-                        product: product,
+                        product: product.product,
                         textsAlign: TextAlign.start,
                         nameMaxLines: 2,
                         descriptionMaxLines: 3,
@@ -135,7 +141,7 @@ class HorizontalProductCard extends StatelessWidget {
                       ),
                       PriceHeroProductItems(
                         product: product,
-                        heroTag: '$tagPrefix${product.name}',
+                        heroTag: '$tagPrefix${product.product.name}',
                       ),
                     ],
                   )),
@@ -143,7 +149,9 @@ class HorizontalProductCard extends StatelessWidget {
               ),
             ),
           ),
-          const FavoriteIcon(),
+          FavoriteIconPositioned(
+            product: product,
+          ),
         ],
       ),
     );
@@ -151,7 +159,7 @@ class HorizontalProductCard extends StatelessWidget {
 }
 
 class PriceHeroProductItems extends StatelessWidget {
-  final Product product;
+  final ProductInfo product;
   final String heroTag;
   const PriceHeroProductItems(
       {super.key, required this.product, required this.heroTag});
@@ -162,15 +170,20 @@ class PriceHeroProductItems extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         PriceProductItem(
-          price: '\$${product.price.toStringAsFixed(1)}',
+          price: '\$${product.product.price.toStringAsFixed(1)}',
         ),
         IconButton(
           onPressed: () {
-            ProductDetails details = productDetails
-                .firstWhere((elm) => elm.product.name == product.name);
-            Navigator.of(context).push(MaterialPageRoute(
+            final PrincipalProvider principalProvider =
+                context.read<PrincipalProvider>();
+            principalProvider.setCurrentHeroProduct(product);
+            Navigator.of(context).push(
+              MaterialPageRoute(
                 builder: (_) => ProductDetailScreen(
-                    productDetails: details, tag: heroTag,)));
+                  tag: heroTag,
+                ),
+              ),
+            );
           },
           icon: const Icon(
             Icons.chevron_right_outlined,
@@ -183,21 +196,42 @@ class PriceHeroProductItems extends StatelessWidget {
 }
 
 //debe estar en un stack
-class FavoriteIcon extends StatelessWidget {
-  const FavoriteIcon({super.key});
+class FavoriteIconPositioned extends StatelessWidget {
+  final ProductInfo product;
+  const FavoriteIconPositioned({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       right: 2,
       top: 2,
-      child: IconButton(
-        onPressed: () {},
-        icon: const Icon(
-          Icons.favorite_border_outlined,
-          color: AppColors.pink,
-        ),
-      ),
+      child: FavoriteIconButton(product: product,),
     );
   }
+}
+
+class FavoriteIconButton extends StatelessWidget {
+  final ProductInfo product;
+  const FavoriteIconButton({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+        onPressed: () => setIsFavoriteProduct(product, context),
+        icon: Icon(
+          product.isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
+          color: AppColors.pink,
+        ),
+      );
+  }
+}
+
+void setIsFavoriteProduct(ProductInfo product, BuildContext context){
+  product.isFavorite = !product.isFavorite;
+  final PrincipalProvider principalProvider =
+      context.read<PrincipalProvider>();
+  principalProvider.setFavoriteProduct(product);
+  final FavoritesProvider favoritesProvider =
+      context.read<FavoritesProvider>();
+  favoritesProvider.setFavoriteProduct(product);
 }

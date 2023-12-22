@@ -88,5 +88,6 @@ class CartProvider extends ChangeNotifier {
     cart.clear();
     totalItems = 0;
     totalPrice = 0;
+    notifyListeners();
   }
 }

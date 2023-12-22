@@ -3,6 +3,7 @@ import 'package:products_app/domain/exception/auth_exception.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/product_cart.dart';
 import 'package:products_app/domain/models/product_category.dart';
+import 'package:products_app/domain/models/product_details.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/domain/models/user.dart';
 import 'package:products_app/domain/repository/api_repository.dart';
@@ -60,14 +61,14 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
 
   @override
   Future<List<ProductInfo>> getFamousProducts() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     return famous;
   }
 
   @override
   Future<List<ProductInfo>> getFamousProductsByCategoryAndName(
       {required String category, String productName = ''}) async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = famous
         .where((prod) =>
             prod.product.name
@@ -89,14 +90,14 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
 
   @override
   Future<List<ProductInfo>> getRecommendedProducts() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     return recommended;
   }
 
   @override
   Future<List<ProductInfo>> getRecommendedProductsByCategoryAndName(
       {required String category, String productName = ''}) async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = recommended
         .where((prod) =>
             prod.product.name
@@ -109,7 +110,14 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
 
   @override
   Future<List<ProductCategory>> getCategories() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     return categories;
+  }
+
+  @override
+  Future<ProductDetails> getProductDetails(Product product) async {
+    final details =
+        productDetails.firstWhere((elm) => elm.product.name == product.name);
+    return details;
   }
 }

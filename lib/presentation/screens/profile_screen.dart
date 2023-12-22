@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
+import 'package:products_app/presentation/providers/favorites_provider.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
+import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
 import 'package:provider/provider.dart';
@@ -171,8 +173,14 @@ class ProfileScreen extends StatelessWidget {
                             // ignore: use_build_context_synchronously
                             final cartProvider = context.read<CartProvider>();
                             cartProvider.clearCart();
-                            //TODO: limpiar favorites
-
+                            final favoritesProvider =
+                                // ignore: use_build_context_synchronously
+                                context.read<FavoritesProvider>();
+                            favoritesProvider.clearFavorites();
+                            final principalProvider =
+                                // ignore: use_build_context_synchronously
+                                context.read<PrincipalProvider>();
+                            principalProvider.setFavoriteAll();
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(

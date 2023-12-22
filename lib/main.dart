@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
+import 'package:products_app/presentation/providers/favorites_provider.dart';
 import 'package:products_app/presentation/providers/login_provider.dart';
+import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
@@ -47,6 +49,15 @@ class MyApp extends StatelessWidget {
             localRepositoryInterface: context.read<LocalRepositoryInterface>(),
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
           )..loadCart(),
+        ),
+        ChangeNotifierProvider(create: (context) => PrincipalProvider(
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+            apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+          )..loadLists(),
+        ),
+        ChangeNotifierProvider(create: (context) => FavoritesProvider(
+            localRepositoryInterface: context.read<LocalRepositoryInterface>(),
+          )..loadFavorites(),
         ),
       ],
       child: Consumer<ThemeProvider>(

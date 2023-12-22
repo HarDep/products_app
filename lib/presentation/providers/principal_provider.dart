@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/product_category.dart';
+import 'package:products_app/domain/models/product_details.dart';
 import 'package:products_app/domain/models/product_info.dart';
 
 import '../../domain/repository/repositories.dart';
@@ -7,6 +8,8 @@ import '../../domain/repository/repositories.dart';
 class PrincipalProvider extends ChangeNotifier {
   final LocalRepositoryInterface localRepositoryInterface;
   final ApiRepositoryInterface apiRepositoryInterface;
+  ProductDetails? currentDetails;
+  ProductInfo? currentInfo;
   List<ProductCategory> categories = [];
   List<ProductInfo> famous = [];
   List<ProductInfo> recommended = [];
@@ -47,6 +50,38 @@ class PrincipalProvider extends ChangeNotifier {
   void _clearProductsLists() {
     famous = [];
     recommended = [];
+    notifyListeners();
+  }
+
+  void setCurrentHeroProduct(ProductInfo product) async {
+    currentInfo = product;
+    currentDetails =
+        await apiRepositoryInterface.getProductDetails(product.product);
+    notifyListeners();
+  }
+
+  void setFavoriteProduct(ProductInfo product) {
+    if (famous.any((element) => element.product.name == product.product.name)) {
+      ProductInfo prod = famous.firstWhere(
+          (element) => element.product.name == product.product.name);
+      prod.isFavorite = product.isFavorite;
+    }
+    if (recommended
+        .any((element) => element.product.name == product.product.name)) {
+      ProductInfo prod = recommended.firstWhere(
+          (element) => element.product.name == product.product.name);
+      prod.isFavorite = product.isFavorite;
+    }
+    notifyListeners();
+  }
+
+  void setFavoriteAll() {
+    for (var element in famous) {
+      element.isFavorite = false;
+    }
+    for (var element in recommended) {
+      element.isFavorite = false;
+    }
     notifyListeners();
   }
 }
