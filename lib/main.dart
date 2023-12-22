@@ -3,6 +3,7 @@ import 'package:products_app/data/datasource/api_rep_impl.dart';
 import 'package:products_app/data/datasource/local_rep_impl.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/login_provider.dart';
+import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/providers/splash_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/splash_screen.dart';
@@ -37,6 +38,11 @@ class MyApp extends StatelessWidget {
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
           );
         }),
+        ChangeNotifierProvider(
+          create: (context) => ProductsProvider(
+            apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
+          )..loadProducts(),
+        ),
         ChangeNotifierProvider(create: (context) => CartProvider(
             localRepositoryInterface: context.read<LocalRepositoryInterface>(),
             apiRepositoryInterface: context.read<ApiRepositoryInterface>(),

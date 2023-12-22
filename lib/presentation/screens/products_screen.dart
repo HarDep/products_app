@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/product.dart';
-import 'package:products_app/domain/repository/api_repository.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
 import 'package:products_app/presentation/screens/search_field.dart';
@@ -11,16 +10,20 @@ import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatelessWidget {
-  const ProductsScreen._();
+  const ProductsScreen({super.key});
 
-  static Widget init(BuildContext context) {
+  // const ProductsScreen._();
+
+  
+
+  /* static Widget init(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => ProductsProvider(
         apiRepositoryInterface: context.read<ApiRepositoryInterface>(),
       )..loadProducts(),
       builder: (_, __) => const ProductsScreen._(),
     );
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {

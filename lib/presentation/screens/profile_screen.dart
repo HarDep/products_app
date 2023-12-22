@@ -171,6 +171,8 @@ class ProfileScreen extends StatelessWidget {
                             // ignore: use_build_context_synchronously
                             final cartProvider = context.read<CartProvider>();
                             cartProvider.clearCart();
+                            //TODO: limpiar favorites
+
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(

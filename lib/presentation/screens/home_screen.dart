@@ -44,12 +44,12 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: IndexedStack(
                   index: provider.indexSelected,
-                  children: [
-                    const PrincipalScreen(),
-                    ProductsScreen.init(context),
-                    const CartScreen(),
-                    const FavoritesScreen(),
-                    const ProfileScreen(),
+                  children: const [
+                    PrincipalScreen(),
+                    ProductsScreen(),
+                    CartScreen(),
+                    FavoritesScreen(),
+                    ProfileScreen(),
                   ],
                 )),
                 _NavigationBar(

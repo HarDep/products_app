@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:products_app/domain/models/product_cart.dart';
+import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/domain/models/user.dart';
 import 'package:products_app/domain/repository/local_storage_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,7 @@ const String _prefName = 'NAME';
 const String _prefImage = 'IMAGE';
 const String _prefDarkTheme = 'ISDARKTHEME';
 const String _prefCart = 'CART';
+const String _prefFavorites = 'FAVORITES';
 
 class LocalRepositoryImpl extends LocalRepositoryInterface {
   @override
@@ -84,5 +86,24 @@ class LocalRepositoryImpl extends LocalRepositoryInterface {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final cartList = json.encode(cart.map((prod) => prod.toJson()).toList());
     await sharedPreferences.setString(_prefCart, cartList);
+  }
+
+  @override
+  Future<List<ProductInfo>> getFavorites() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? favoritesFromLocal = sharedPreferences.getString(_prefFavorites);
+    if (favoritesFromLocal != null) {
+      final fromJson = json.decode(favoritesFromLocal) as List<dynamic>;
+      final favoritesList = fromJson.map((elm) => ProductInfo.fromJson(elm)).toList.call();
+      return favoritesList;
+    }
+    return [];
+  }
+
+  @override
+  Future<void> saveFavorites(List<ProductInfo> favorites) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final favoritesList = json.encode(favorites.map((prod) => prod.toJson()).toList());
+    await sharedPreferences.setString(_prefFavorites, favoritesList);
   }
 }
