@@ -3,6 +3,7 @@ import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/repository/api_repository.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
+import 'package:products_app/presentation/screens/search_field.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
 import 'package:products_app/presentation/widgets/grid_view_list.dart';
@@ -28,7 +29,9 @@ class ProductsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
+        leadingWidth: 130,
         title: const Text('Productos'),
+        leading: const SearchField(tag: 'products',),
       ),
       body: GridViewList(
         title: 'Productos', 

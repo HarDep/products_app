@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/data/memory_products.dart';
 import 'package:products_app/domain/models/product.dart';
+import 'package:products_app/presentation/screens/search_field.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
 
@@ -13,7 +14,9 @@ class PrincipalScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
+        leadingWidth: 130,
         title: const Text('Inicio'),
+        leading: const SearchField(tag: 'principal',),
         actions: [
           Padding(
             padding: const EdgeInsets.all(4.0),

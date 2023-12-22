@@ -8,6 +8,7 @@ class GridViewList extends StatelessWidget {
   final bool conditionList;
   final int itemsLength;
   final ItemBuild itemBuild;
+  
   const GridViewList({
     super.key,
     required this.title,
@@ -35,8 +36,23 @@ class GridViewList extends StatelessWidget {
                 color: Theme.of(context).cardColor),
           ),
         ),
-        Expanded(
-          child: conditionList? 
+        GridList(conditionList: conditionList, itemsLength: itemsLength, itemBuild: itemBuild),
+      ],
+    );
+  }
+}
+
+class GridList extends StatelessWidget {
+  final bool conditionList;
+  final int itemsLength;
+  final ItemBuild itemBuild;
+
+  const GridList({super.key, required this.conditionList, required this.itemsLength, required this.itemBuild});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+          child: conditionList?
           GridView.builder(
             padding: const EdgeInsets.all(20),
             itemCount: itemsLength,
@@ -49,8 +65,6 @@ class GridViewList extends StatelessWidget {
             itemBuilder: itemBuild,
           )
           : const ListLoading(),
-        ),
-      ],
-    );
+        );
   }
 }
