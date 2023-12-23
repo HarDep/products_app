@@ -3,7 +3,7 @@ import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
-import 'package:products_app/presentation/screens/search_field.dart';
+import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +21,7 @@ class PrincipalScreen extends StatelessWidget {
         leadingWidth: 130,
         title: const Text('Inicio'),
         leading: const SearchField(
-          tag: 'principal',
+          tag: TagPage.principal,
         ),
         actions: [
           Padding(

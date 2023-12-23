@@ -12,12 +12,14 @@ class VerticalProductCard extends StatelessWidget {
   final ProductInfo product;
   final double rightPadding;
   final String tagPrefix;
+  final VoidCallback? anotherAction;
 
   const VerticalProductCard(
       {super.key,
       required this.product,
       required this.rightPadding,
-      required this.tagPrefix});
+      required this.tagPrefix,
+      this.anotherAction});
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,7 @@ class VerticalProductCard extends StatelessWidget {
           ),
           FavoriteIconPositioned(
             product: product,
+            anotherAction: anotherAction,
           ),
         ],
       ),
@@ -197,41 +200,35 @@ class PriceHeroProductItems extends StatelessWidget {
 
 //debe estar en un stack
 class FavoriteIconPositioned extends StatelessWidget {
+  final VoidCallback? anotherAction;
   final ProductInfo product;
-  const FavoriteIconPositioned({super.key, required this.product});
+  const FavoriteIconPositioned({super.key, required this.product, this.anotherAction});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       right: 2,
       top: 2,
-      child: FavoriteIconButton(product: product,),
+      child: IconButton(
+      onPressed: () {
+        setIsFavoriteProduct(product, context);
+        if(anotherAction != null){
+          anotherAction!();
+        }
+      },
+      icon: Icon(
+        product.isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
+        color: AppColors.pink,
+      ),
+    ),
     );
   }
 }
 
-class FavoriteIconButton extends StatelessWidget {
-  final ProductInfo product;
-  const FavoriteIconButton({super.key, required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: () => setIsFavoriteProduct(product, context),
-        icon: Icon(
-          product.isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
-          color: AppColors.pink,
-        ),
-      );
-  }
-}
-
-void setIsFavoriteProduct(ProductInfo product, BuildContext context){
+void setIsFavoriteProduct(ProductInfo product, BuildContext context) {
   product.isFavorite = !product.isFavorite;
-  final PrincipalProvider principalProvider =
-      context.read<PrincipalProvider>();
+  final PrincipalProvider principalProvider = context.read<PrincipalProvider>();
   principalProvider.setFavoriteProduct(product);
-  final FavoritesProvider favoritesProvider =
-      context.read<FavoritesProvider>();
+  final FavoritesProvider favoritesProvider = context.read<FavoritesProvider>();
   favoritesProvider.setFavoriteProduct(product);
 }

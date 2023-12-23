@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/domain/models/product_details.dart';
@@ -14,12 +16,16 @@ class PrincipalProvider extends ChangeNotifier {
   List<ProductCategory> categories = [];
   List<ProductInfo> famous = [];
   List<ProductInfo> recommended = [];
-  List<ProductInfo> queryList = [];
+
+  final StreamController<List<ProductInfo>> _resultsController =
+      StreamController.broadcast();
 
   PrincipalProvider({
     required this.localRepositoryInterface,
     required this.apiRepositoryInterface,
   });
+
+  Stream<List<ProductInfo>> get resultsStream => _resultsController.stream;
 
   void loadLists() async {
     categories.add(ProductCategory(name: 'Todas', image: 'assets/todas.png'));
@@ -83,21 +89,23 @@ class PrincipalProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void searchQuery(String query, [int categoryIndex = 0]) async {
+//necesito guardar el indice de categoria para las busquedas,
+//ya que el favorite recarga la busqueda y necesito mantener la anterior categoria 
+  void searchProductsQuery(String query, [int categoryIndex = 0]) async {
     final String category =
-        categoryIndex == 0 ? '' : categories[categoryIndex].name;
-    queryList = await apiRepositoryInterface.getProductsByNameQueryAndCategory(
-        query: query, category: category);
+        categoryIndex == 0 ? 'Burguer' : categories[categoryIndex].name; //no reconoce categoria?
+    final result = await apiRepositoryInterface
+        .getProductsByNameQueryAndCategory(query: query, category: category);
     final favorites = await localRepositoryInterface.getFavorites();
     for (var favorite in favorites) {
-      for (var prod in queryList) {
+      for (var prod in result) {
         if (prod.product.name == favorite.product.name) {
           prod.isFavorite = favorite.isFavorite;
           break;
         }
       }
     }
-    notifyListeners();
+    _resultsController.add(result);
   }
 
   void searchListsWithCategories([int categoryIndex = 0]) async {

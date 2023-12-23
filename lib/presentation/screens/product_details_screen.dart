@@ -175,7 +175,9 @@ class _ItemsDetails extends StatelessWidget {
             children: [
               CustomeButton(
                 text: 'Ordenar ahora',
-                voidCallback: () {},
+                voidCallback: () {
+                  //TODO: ordenar producto
+                },
                 height: 50,
                 textPadding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 40),

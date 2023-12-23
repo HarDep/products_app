@@ -1,13 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/domain/repository/local_storage_repository.dart';
 
 class FavoritesProvider extends ChangeNotifier {
   List<ProductInfo> favorites = [];
-  List<ProductInfo> queryFavorites = [];
   final LocalRepositoryInterface localRepositoryInterface;
 
+  final StreamController<List<ProductInfo>> _resultsController =
+      StreamController.broadcast();
+
   FavoritesProvider({required this.localRepositoryInterface});
+
+  Stream<List<ProductInfo>> get resultsStream => _resultsController.stream;
 
   void loadFavorites() async {
     favorites = await localRepositoryInterface.getFavorites();
@@ -34,11 +40,11 @@ class FavoritesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void searchFavorites(String query) {
-    queryFavorites = favorites
+  void searchFavoriteQuery(String query) {
+    final result = favorites
         .where((elm) =>
             elm.product.name.toUpperCase().contains(query.toUpperCase()))
         .toList();
-    notifyListeners();
+    _resultsController.add(result);
   }
 }

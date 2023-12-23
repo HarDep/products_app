@@ -3,7 +3,7 @@ import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/presentation/providers/favorites_provider.dart';
 import 'package:products_app/presentation/providers/home_provider.dart';
-import 'package:products_app/presentation/screens/search_field.dart';
+import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ class FavoritesScreen extends StatelessWidget {
         leadingWidth: favoritesProvider.favorites.isNotEmpty? 130 : 0,
         title: const Text('Mis Favoritos'),
         leading: favoritesProvider.favorites.isNotEmpty? const SearchField(
-          tag: 'favorites',
+          tag: TagPage.favorites,
         ) : const SizedBox.shrink(),
       ),
       body: favoritesProvider.favorites.isNotEmpty? GridViewList(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
-import 'package:products_app/presentation/screens/search_field.dart';
+import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
 import 'package:products_app/presentation/widgets/grid_view_list.dart';
@@ -34,7 +34,7 @@ class ProductsScreen extends StatelessWidget {
         toolbarHeight: 80,
         leadingWidth: 130,
         title: const Text('Productos'),
-        leading: const SearchField(tag: 'products',),
+        leading: const SearchField(tag: TagPage.products,),
       ),
       body: GridViewList(
         title: 'Productos', 
@@ -42,7 +42,7 @@ class ProductsScreen extends StatelessWidget {
         itemsLength: productsProvider.products.length, 
         itemBuild: (context, index) {
           Product product = productsProvider.products[index];
-          return _ItemProduct(
+          return ItemProduct(
             product: product,
           );
         },
@@ -51,10 +51,10 @@ class ProductsScreen extends StatelessWidget {
   }
 }
 
-class _ItemProduct extends StatelessWidget {
+class ItemProduct extends StatelessWidget {
   final Product product;
 
-  const _ItemProduct({required this.product});
+  const ItemProduct({ super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
