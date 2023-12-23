@@ -4,6 +4,7 @@ import 'package:products_app/domain/repository/local_storage_repository.dart';
 
 class FavoritesProvider extends ChangeNotifier {
   List<ProductInfo> favorites = [];
+  List<ProductInfo> queryFavorites = [];
   final LocalRepositoryInterface localRepositoryInterface;
 
   FavoritesProvider({required this.localRepositoryInterface});
@@ -30,6 +31,14 @@ class FavoritesProvider extends ChangeNotifier {
 
   void clearFavorites() {
     favorites.clear();
+    notifyListeners();
+  }
+
+  void searchFavorites(String query) {
+    queryFavorites = favorites
+        .where((elm) =>
+            elm.product.name.toUpperCase().contains(query.toUpperCase()))
+        .toList();
     notifyListeners();
   }
 }

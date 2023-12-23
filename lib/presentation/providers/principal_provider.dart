@@ -8,11 +8,13 @@ import '../../domain/repository/repositories.dart';
 class PrincipalProvider extends ChangeNotifier {
   final LocalRepositoryInterface localRepositoryInterface;
   final ApiRepositoryInterface apiRepositoryInterface;
-  ProductDetails? currentDetails;
-  ProductInfo? currentInfo;
+  ProductDetails? currentDetails; //hero
+  ProductInfo? currentInfo; //hero
+
   List<ProductCategory> categories = [];
   List<ProductInfo> famous = [];
   List<ProductInfo> recommended = [];
+  List<ProductInfo> queryList = [];
 
   PrincipalProvider({
     required this.localRepositoryInterface,
@@ -20,7 +22,9 @@ class PrincipalProvider extends ChangeNotifier {
   });
 
   void loadLists() async {
-    categories = await apiRepositoryInterface.getCategories();
+    categories.add(ProductCategory(name: 'Todas', image: 'assets/todas.png'));
+    final listCategories = await apiRepositoryInterface.getCategories();
+    categories.addAll(listCategories);
     famous = await apiRepositoryInterface.getFamousProducts();
     recommended = await apiRepositoryInterface.getRecommendedProducts();
     await _putFavorites();
@@ -46,12 +50,6 @@ class PrincipalProvider extends ChangeNotifier {
   }
 
   //cuando ponga la seccion de categorias cada boton va a hacer el filtro de categoria y luego navigate.pop
-
-  void _clearProductsLists() {
-    famous = [];
-    recommended = [];
-    notifyListeners();
-  }
 
   void setCurrentHeroProduct(ProductInfo product) async {
     currentInfo = product;
@@ -82,6 +80,34 @@ class PrincipalProvider extends ChangeNotifier {
     for (var element in recommended) {
       element.isFavorite = false;
     }
+    notifyListeners();
+  }
+
+  void searchQuery(String query, [int categoryIndex = 0]) async {
+    final String category =
+        categoryIndex == 0 ? '' : categories[categoryIndex].name;
+    queryList = await apiRepositoryInterface.getProductsByNameQueryAndCategory(
+        query: query, category: category);
+    final favorites = await localRepositoryInterface.getFavorites();
+    for (var favorite in favorites) {
+      for (var prod in queryList) {
+        if (prod.product.name == favorite.product.name) {
+          prod.isFavorite = favorite.isFavorite;
+          break;
+        }
+      }
+    }
+    notifyListeners();
+  }
+
+  void searchListsWithCategories([int categoryIndex = 0]) async {
+    final String category =
+        categoryIndex == 0 ? '' : categories[categoryIndex].name;
+    famous = await apiRepositoryInterface.getFamousProductsByCategory(
+        category: category);
+    recommended = await apiRepositoryInterface.getRecommendedProductsByCategory(
+        category: category);
+    await _putFavorites();
     notifyListeners();
   }
 }

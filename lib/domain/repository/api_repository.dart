@@ -17,11 +17,14 @@ abstract class ApiRepositoryInterface {
   Future<ProductDetails> getProductDetails(Product product);
   Future<List<ProductInfo>> getFamousProducts();
   Future<List<ProductInfo>> getRecommendedProducts();
-  Future<List<ProductInfo>> getFamousProductsByCategoryAndName(
-      {required String category, String productName = ''});
-  Future<List<ProductInfo>> getRecommendedProductsByCategoryAndName(
-      {required String category, String productName = ''});
-  Future<List<Product>> getProductsByName(String name);
+  Future<List<ProductInfo>> getFamousProductsByCategory({
+    String category = '',
+  });
+  Future<List<ProductInfo>> getRecommendedProductsByCategory({
+    String category = '',
+  });
+  Future<List<Product>> getProductsByNameQuery(String query);
+  Future<List<ProductInfo>> getProductsByNameQueryAndCategory({required String query, required String category});
   //y las sugerencias tambien? o de eso se encarga el provider
   //filtrar favoritos por query o que lo haga el provider
 }

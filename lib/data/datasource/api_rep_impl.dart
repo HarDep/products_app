@@ -66,24 +66,19 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   }
 
   @override
-  Future<List<ProductInfo>> getFamousProductsByCategoryAndName(
-      {required String category, String productName = ''}) async {
+  Future<List<ProductInfo>> getFamousProductsByCategory({String category = '',}) async {
     await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = famous
-        .where((prod) =>
-            prod.product.name
-                .toUpperCase()
-                .contains(productName.toUpperCase()) &&
-            prod.category.name.toUpperCase() == category.toUpperCase())
+        .where((prod) => prod.category.name.toUpperCase() == category.toUpperCase())
         .toList();
     return productsFiltered;
   }
 
   @override
-  Future<List<Product>> getProductsByName(String name) async {
+  Future<List<Product>> getProductsByNameQuery(String query) async {
     await Future.delayed(const Duration(seconds: 2));
     final productsFiltered = products
-        .where((prod) => prod.name.toUpperCase().contains(name.toUpperCase()))
+        .where((prod) => prod.name.toUpperCase().contains(query.toUpperCase()))
         .toList();
     return productsFiltered;
   }
@@ -95,15 +90,10 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   }
 
   @override
-  Future<List<ProductInfo>> getRecommendedProductsByCategoryAndName(
-      {required String category, String productName = ''}) async {
+  Future<List<ProductInfo>> getRecommendedProductsByCategory({String category = '',}) async {
     await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = recommended
-        .where((prod) =>
-            prod.product.name
-                .toUpperCase()
-                .contains(productName.toUpperCase()) &&
-            prod.category.name.toUpperCase() == category.toUpperCase())
+        .where((prod) => prod.category.name.toUpperCase() == category.toUpperCase())
         .toList();
     return productsFiltered;
   }
@@ -119,5 +109,15 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
     final details =
         productDetails.firstWhere((elm) => elm.product.name == product.name);
     return details;
+  }
+  
+  @override
+  Future<List<ProductInfo>> getProductsByNameQueryAndCategory({required String query, required String category}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final productsFiltered = recommended //no es recommended lo uso porque igual hay estan todos los productos
+        .where((prod) => prod.product.name.toUpperCase().contains(query.toUpperCase()) &&
+        prod.category.name.toUpperCase() == category.toUpperCase())
+        .toList();
+    return productsFiltered;
   }
 }
