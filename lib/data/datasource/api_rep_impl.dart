@@ -69,7 +69,7 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   Future<List<ProductInfo>> getFamousProductsByCategory({String category = '',}) async {
     await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = famous
-        .where((prod) => prod.category.name.toUpperCase() == category.toUpperCase())
+        .where((prod) => prod.category.name.toUpperCase().contains(category.toUpperCase()) )
         .toList();
     return productsFiltered;
   }
@@ -93,7 +93,7 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   Future<List<ProductInfo>> getRecommendedProductsByCategory({String category = '',}) async {
     await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = recommended
-        .where((prod) => prod.category.name.toUpperCase() == category.toUpperCase())
+        .where((prod) => prod.category.name.toUpperCase().contains(category.toUpperCase()) )
         .toList();
     return productsFiltered;
   }
@@ -116,7 +116,7 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
     await Future.delayed(const Duration(seconds: 1));
     final productsFiltered = recommended //no es recommended lo uso porque igual hay estan todos los productos
         .where((prod) => prod.product.name.toUpperCase().contains(query.toUpperCase()) &&
-        prod.category.name.toUpperCase() == category.toUpperCase())
+        prod.category.name.toUpperCase().contains(category.toUpperCase()) )
         .toList();
     return productsFiltered;
   }

@@ -9,6 +9,7 @@ import 'package:products_app/presentation/screens/products_screen.dart';
 import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
+import 'package:products_app/presentation/widgets/product_category_widgets.dart';
 import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:provider/provider.dart';
 
@@ -100,26 +101,36 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     }
   }
 
-  //(mirar si pasa en otros widgets, no creo pero toca ver)
-
 //TODO: principal results
   Widget _getPrincipalResults(BuildContext context) {
     final PrincipalProvider principalProvider =
         Provider.of<PrincipalProvider>(context);
     principalProvider.searchProductsQuery(query);
-    return _StreamConstructor<ProductInfo>(
-      stream: principalProvider.resultsStream,
-      listTitle: 'Resultados de productos',
-      itemBuilding: (_, item) {
-        return VerticalProductCard(
-          product: item,
-          rightPadding: 0.0,
-          tagPrefix: '$tagPage search: $query ',
-          anotherAction: () {
-            principalProvider.searchProductsQuery(query);
+    return Column(
+      children: [
+        CategoriesHorizontal(
+          title: 'Selecciona una categoria',
+          isVisibleSeeAllButton: false,
+          action: (index) {
+            principalProvider.searchProductsQuery(query, index);
           },
-        );
-      },
+        ),
+        _StreamConstructor<ProductInfo>(
+          isChild: true,
+          stream: principalProvider.resultsStream,
+          listTitle: 'Resultados de productos',
+          itemBuilding: (_, item) {
+            return VerticalProductCard(
+              product: item,
+              rightPadding: 0.0,
+              tagPrefix: '$tagPage search: $query ',
+              anotherAction: () {
+                principalProvider.searchProductsQuery(query);
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -130,6 +141,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     Future.delayed(
         Duration.zero, () => favoritesProvider.searchFavoriteQuery(query));
     return _StreamConstructor<ProductInfo>(
+      isChild: false,
       stream: favoritesProvider.resultsStream,
       listTitle: 'Resultados de favoritos',
       itemBuilding: (_, item) {
@@ -150,6 +162,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
         Provider.of<ProductsProvider>(context, listen: false);
     productsProvider.searchProductsQuery(query);
     return _StreamConstructor<Product>(
+      isChild: false,
       stream: productsProvider.resultsStream,
       listTitle: 'Resultados de productos',
       itemBuilding: (_, item) {
@@ -181,10 +194,11 @@ class _StreamConstructor<T> extends StatelessWidget {
   final Stream<List<T>> stream;
   final ItemBuilding<T> itemBuilding;
   final String listTitle;
+  final bool isChild;
   const _StreamConstructor(
       {required this.stream,
       required this.itemBuilding,
-      required this.listTitle});
+      required this.listTitle, required this.isChild});
 
   @override
   Widget build(BuildContext context) {
@@ -197,16 +211,26 @@ class _StreamConstructor<T> extends StatelessWidget {
         }
         final List<T> list = snapshot.data!;
         return list.isNotEmpty
-            ? GridViewList(
-                title: listTitle,
-                conditionList: list.isNotEmpty,
-                itemsLength: list.length,
-                itemBuild: (context, index) {
-                  final T item = list[index];
-                  return itemBuilding(context, item);
-                },
-              )
-            : const _NotFoundContent();
+            ? 
+        isChild? GridViewListAsChild(
+            title: listTitle,
+            conditionList: list.isNotEmpty,
+            itemsLength: list.length,
+            itemBuild: (context, index) {
+              final T item = list[index];
+              return itemBuilding(context, item);
+            },
+          ): 
+          GridViewList(
+            title: listTitle,
+            conditionList: list.isNotEmpty,
+            itemsLength: list.length,
+            itemBuild: (context, index) {
+              final T item = list[index];
+              return itemBuilding(context, item);
+            },
+          )
+        : const _NotFoundContent();
       },
     );
   }

@@ -93,7 +93,7 @@ class PrincipalProvider extends ChangeNotifier {
 //ya que el favorite recarga la busqueda y necesito mantener la anterior categoria 
   void searchProductsQuery(String query, [int categoryIndex = 0]) async {
     final String category =
-        categoryIndex == 0 ? 'Burguer' : categories[categoryIndex].name; //no reconoce categoria?
+        categoryIndex == 0 ? '' : categories[categoryIndex].name;
     final result = await apiRepositoryInterface
         .getProductsByNameQueryAndCategory(query: query, category: category);
     final favorites = await localRepositoryInterface.getFavorites();

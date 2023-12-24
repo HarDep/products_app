@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:products_app/configs/colors.dart';
 
 class OvalAvatar extends StatelessWidget {
   final String image;
@@ -15,7 +16,8 @@ class OvalAvatar extends StatelessWidget {
 class SquareAvatar extends StatelessWidget {
   final String image;
   final double circularRadius;
-  const SquareAvatar({super.key, required this.image, required this.circularRadius});
+  const SquareAvatar(
+      {super.key, required this.image, required this.circularRadius});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,11 @@ class NetworkImageWithCircularProgress extends StatelessWidget {
     return Image.network(
       image,
       fit: BoxFit.cover,
+      errorBuilder: (context, object, stackTrace) {
+        return const Center(
+          child: Text('No se pudo cargar la imagen', style: TextStyle(color: AppColors.pink),),
+        );
+      },
       loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent? loadingProgress) {
         if (loadingProgress == null) return child;

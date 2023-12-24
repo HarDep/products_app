@@ -3,6 +3,33 @@ import 'package:products_app/presentation/widgets/loading_widgets.dart';
 
 typedef ItemBuild = Widget? Function(BuildContext, int);
 
+class GridViewListAsChild extends StatelessWidget {
+  final String title;
+  final bool conditionList;
+  final int itemsLength;
+  final ItemBuild itemBuild;
+  
+  const GridViewListAsChild({
+    super.key,
+    required this.title,
+    required this.conditionList,
+    required this.itemsLength,
+    required this.itemBuild,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GridViewList(
+        title: title,
+        conditionList: conditionList,
+        itemsLength: itemsLength,
+        itemBuild: itemBuild,
+      ),
+    );
+  }
+}
+
 class GridViewList extends StatelessWidget {
   final String title;
   final bool conditionList;
