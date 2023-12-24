@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/ingredient.dart';
 import 'package:products_app/domain/models/product_info.dart';
+import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
 import 'package:provider/provider.dart';
@@ -108,6 +110,7 @@ class _ItemsDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final PrincipalProvider principalProvider =
         Provider.of(context, listen: true);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Padding(
       padding:
           const EdgeInsets.only(top: radius, left: 30, right: 30, bottom: 30),
@@ -176,7 +179,13 @@ class _ItemsDetails extends StatelessWidget {
               CustomeButton(
                 text: 'Ordenar ahora',
                 voidCallback: () {
-                  //TODO: ordenar producto
+                  cartProvider.add(product.product);
+                  final SnackBar snackBar = CustomeSnackBar.getSnackBar(
+                    text: 'Producto añadido al carrito',
+                    backgroundColor: AppColors.green,
+                    seconds: 1,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 height: 50,
                 textPadding:

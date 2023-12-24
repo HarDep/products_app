@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+class ListLoader extends StatelessWidget {
+  final Widget content;
+  final bool loadCondition;
+  const ListLoader({super.key, required this.content, required this.loadCondition});
+
+  @override
+  Widget build(BuildContext context) {
+    return loadCondition? content : const ListLoading();
+  }
+}
+
 class ScreenLoading extends StatelessWidget {
   const ScreenLoading({super.key});
 

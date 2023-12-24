@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 
 class SearchProductsDelegate extends SearchDelegate<Product> {
   final TagPage tagPage;
+  int categoryIndex = 0;
 
   SearchProductsDelegate({required this.tagPage});
 
@@ -89,6 +90,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     }
   }
 
+//TODO: hacer search suggestions
   @override
   Widget buildSuggestions(BuildContext context) {
     switch (tagPage) {
@@ -101,7 +103,6 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     }
   }
 
-//TODO: principal results
   Widget _getPrincipalResults(BuildContext context) {
     final PrincipalProvider principalProvider =
         Provider.of<PrincipalProvider>(context);
@@ -112,6 +113,8 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
           title: 'Selecciona una categoria',
           isVisibleSeeAllButton: false,
           action: (index) {
+            principalProvider.showLoadOfChangeCategoryQuery();
+            categoryIndex = index;
             principalProvider.searchProductsQuery(query, index);
           },
         ),
@@ -125,7 +128,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
               rightPadding: 0.0,
               tagPrefix: '$tagPage search: $query ',
               anotherAction: () {
-                principalProvider.searchProductsQuery(query);
+                principalProvider.searchProductsQuery(query, categoryIndex);
               },
             );
           },
@@ -174,20 +177,6 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
   }
 }
 
-class _NotFoundContent extends StatelessWidget {
-  const _NotFoundContent();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'No se encontraron resultados',
-        style: TextStyle(color: Theme.of(context).cardColor),
-      ),
-    );
-  }
-}
-
 typedef ItemBuilding<T> = Widget Function(BuildContext, T);
 
 class _StreamConstructor<T> extends StatelessWidget {
@@ -198,7 +187,8 @@ class _StreamConstructor<T> extends StatelessWidget {
   const _StreamConstructor(
       {required this.stream,
       required this.itemBuilding,
-      required this.listTitle, required this.isChild});
+      required this.listTitle,
+      required this.isChild});
 
   @override
   Widget build(BuildContext context) {
@@ -210,27 +200,32 @@ class _StreamConstructor<T> extends StatelessWidget {
           return const ListLoading();
         }
         final List<T> list = snapshot.data!;
+        if((list.runtimeType == List<ProductInfo> ) && list.isNotEmpty){
+          if((list[0] as ProductInfo).category.name == '@load'){
+            return const ListLoading();
+          }
+        }
         return list.isNotEmpty
-            ? 
-        isChild? GridViewListAsChild(
-            title: listTitle,
-            conditionList: list.isNotEmpty,
-            itemsLength: list.length,
-            itemBuild: (context, index) {
-              final T item = list[index];
-              return itemBuilding(context, item);
-            },
-          ): 
-          GridViewList(
-            title: listTitle,
-            conditionList: list.isNotEmpty,
-            itemsLength: list.length,
-            itemBuild: (context, index) {
-              final T item = list[index];
-              return itemBuilding(context, item);
-            },
-          )
-        : const _NotFoundContent();
+            ? isChild
+                ? GridViewListAsChild(
+                    title: listTitle,
+                    conditionList: list.isNotEmpty,
+                    itemsLength: list.length,
+                    itemBuild: (context, index) {
+                      final T item = list[index];
+                      return itemBuilding(context, item);
+                    },
+                  )
+                : GridViewList(
+                    title: listTitle,
+                    conditionList: list.isNotEmpty,
+                    itemsLength: list.length,
+                    itemBuild: (context, index) {
+                      final T item = list[index];
+                      return itemBuilding(context, item);
+                    },
+                  )
+            : const NotFoundContent();
       },
     );
   }

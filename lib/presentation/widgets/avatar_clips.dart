@@ -39,7 +39,12 @@ class NetworkImageWithCircularProgress extends StatelessWidget {
       fit: BoxFit.cover,
       errorBuilder: (context, object, stackTrace) {
         return const Center(
-          child: Text('No se pudo cargar la imagen', style: TextStyle(color: AppColors.pink),),
+          child: FittedBox(
+            child: Text('No se pudo cargar la imagen',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.pink),
+            ),
+          ),
         );
       },
       loadingBuilder: (BuildContext context, Widget child,

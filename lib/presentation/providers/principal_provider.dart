@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:products_app/domain/models/load_status.dart';
+import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/domain/models/product_details.dart';
 import 'package:products_app/domain/models/product_info.dart';
@@ -13,6 +15,7 @@ class PrincipalProvider extends ChangeNotifier {
   ProductDetails? currentDetails; //hero
   ProductInfo? currentInfo; //hero
 
+  LoadStatus loadStatus = LoadStatus.loading;
   List<ProductCategory> categories = [];
   List<ProductInfo> famous = [];
   List<ProductInfo> recommended = [];
@@ -34,6 +37,7 @@ class PrincipalProvider extends ChangeNotifier {
     famous = await apiRepositoryInterface.getFamousProducts();
     recommended = await apiRepositoryInterface.getRecommendedProducts();
     await _putFavorites();
+    loadStatus = LoadStatus.founded;
     notifyListeners();
   }
 
@@ -89,8 +93,6 @@ class PrincipalProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-//necesito guardar el indice de categoria para las busquedas,
-//ya que el favorite recarga la busqueda y necesito mantener la anterior categoria 
   void searchProductsQuery(String query, [int categoryIndex = 0]) async {
     final String category =
         categoryIndex == 0 ? '' : categories[categoryIndex].name;
@@ -108,7 +110,17 @@ class PrincipalProvider extends ChangeNotifier {
     _resultsController.add(result);
   }
 
+  void showLoadOfChangeCategoryQuery() {
+    final loader = ProductInfo(
+      product: Product(description: '', image: '', name: '', price: 0),
+      category: ProductCategory(name: '@load', image: ''),
+    );
+    _resultsController.add([loader]);
+  }
+
   void searchListsWithCategories([int categoryIndex = 0]) async {
+    loadStatus = LoadStatus.loading;
+    notifyListeners();
     final String category =
         categoryIndex == 0 ? '' : categories[categoryIndex].name;
     famous = await apiRepositoryInterface.getFamousProductsByCategory(
@@ -116,6 +128,7 @@ class PrincipalProvider extends ChangeNotifier {
     recommended = await apiRepositoryInterface.getRecommendedProductsByCategory(
         category: category);
     await _putFavorites();
+    loadStatus = LoadStatus.founded;
     notifyListeners();
   }
 }

@@ -6,6 +6,7 @@ import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/providers/theme_provider.dart';
 import 'package:products_app/presentation/screens/login_screen.dart';
+import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -21,184 +22,186 @@ class ProfileScreen extends StatelessWidget {
         toolbarHeight: 80,
         title: const Text('Mi Perfil'),
       ),
-      body: user != null
-          ? Padding(
-              padding: const EdgeInsets.only(
-                  top: 40, bottom: 10, left: 30, right: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                      flex: 2,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            left: 0,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.green,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: CircleAvatar(
-                                  radius: 60,
-                                  child: ClipOval(
-                                    child: user.image != null
-                                        ? Image.asset(
-                                            user.image!,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : const Icon(Icons.person_2_outlined),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 105,
-                            right: 0,
-                            left: 0,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.white,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColors.purple,
-                                  child: InkWell(
-                                    onTap: () {
-                                      //TODO : camera action
-                                    },
-                                    child: const ClipOval(
-                                      child: Icon(
-                                        Icons.camera_alt_outlined,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 145,
-                            right: 0,
-                            left: 0,
-                            child: Text(
-                              user.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Theme.of(context).iconTheme.color),
-                            ),
-                          ),
-                        ],
-                      )),
-                  Expanded(
-                    flex: 3,
-                    child: Column(
+      body: ListLoader(
+        loadCondition: user != null ,
+        content: user != null ? Padding(
+            padding: const EdgeInsets.only(
+                top: 40, bottom: 10, left: 30, right: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                    flex: 2,
+                    child: Stack(
                       children: [
-                        Card(
-                          color: Theme.of(context).canvasColor,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  'Informacion Personal',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Theme.of(context).iconTheme.color,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          left: 0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.green,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: CircleAvatar(
+                                radius: 60,
+                                child: ClipOval(
+                                  child: user.image != null
+                                      ? Image.asset(
+                                          user.image!,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(Icons.person_2_outlined),
                                 ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                const Text(
-                                  'Correo',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: AppColors.green,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
-                                ),
-                                Text(
-                                  '${user.username}@app.com', //correo
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Theme.of(context).iconTheme.color,
-                                      fontSize: 15),
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                SwitchListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 0),
-                                    value: provider.isDark ?? false,
-                                    title: Text(
-                                      'Modo Oscuro',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          color: Theme.of(context).cardColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-                                    onChanged: (value) {
-                                      provider.updateTheme(value);
-                                      themeProvider.updateTheme(value);
-                                    }),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        Center(
-                            child: ElevatedButton(
-                          style: const ButtonStyle(
-                              backgroundColor:
-                                  MaterialStatePropertyAll(AppColors.purple)),
-                          onPressed: () async {
-                            await provider.logOut();
-                            await themeProvider.loadTheme();
-                            // ignore: use_build_context_synchronously
-                            final cartProvider = context.read<CartProvider>();
-                            cartProvider.clearCart();
-                            final favoritesProvider =
-                                // ignore: use_build_context_synchronously
-                                context.read<FavoritesProvider>();
-                            favoritesProvider.clearFavorites();
-                            final principalProvider =
-                                // ignore: use_build_context_synchronously
-                                context.read<PrincipalProvider>();
-                            principalProvider.setFavoriteAll();
-                            // ignore: use_build_context_synchronously
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (_) => const LoginScreen()),
-                                (_) => false);
-                          },
-                          child: const Text(
-                            'Cerrar Sesion',
-                            style: TextStyle(color: AppColors.white),
+                        Positioned(
+                          top: 105,
+                          right: 0,
+                          left: 0,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundColor: AppColors.purple,
+                                child: InkWell(
+                                  onTap: () {
+                                    //TODO : camera action
+                                  },
+                                  child: const ClipOval(
+                                    child: Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                        )),
+                        ),
+                        Positioned(
+                          top: 145,
+                          right: 0,
+                          left: 0,
+                          child: Text(
+                            user.name,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Theme.of(context).iconTheme.color),
+                          ),
+                        ),
                       ],
-                    ),
+                    )),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      Card(
+                        color: Theme.of(context).canvasColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Informacion Personal',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Theme.of(context).iconTheme.color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Text(
+                                'Correo',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: AppColors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15),
+                              ),
+                              Text(
+                                '${user.username}@app.com', //correo
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: Theme.of(context).iconTheme.color,
+                                    fontSize: 15),
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              SwitchListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 0),
+                                  value: provider.isDark ?? false,
+                                  title: Text(
+                                    'Modo Oscuro',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Theme.of(context).cardColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                                  onChanged: (value) {
+                                    provider.updateTheme(value);
+                                    themeProvider.updateTheme(value);
+                                  }),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Center(
+                          child: ElevatedButton(
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(AppColors.purple)),
+                        onPressed: () async {
+                          await provider.logOut();
+                          await themeProvider.loadTheme();
+                          // ignore: use_build_context_synchronously
+                          final cartProvider = context.read<CartProvider>();
+                          cartProvider.clearCart();
+                          final favoritesProvider =
+                              // ignore: use_build_context_synchronously
+                              context.read<FavoritesProvider>();
+                          favoritesProvider.clearFavorites();
+                          final principalProvider =
+                              // ignore: use_build_context_synchronously
+                              context.read<PrincipalProvider>();
+                          principalProvider.setFavoriteAll();
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (_) => const LoginScreen()),
+                              (_) => false);
+                        },
+                        child: const Text(
+                          'Cerrar Sesion',
+                          style: TextStyle(color: AppColors.white),
+                        ),
+                      ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ) : const ListLoading(),
+          ),
     );
   }
 }

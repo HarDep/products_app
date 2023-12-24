@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:products_app/presentation/widgets/loading_widgets.dart';
 
 typedef ItemBuild = Widget? Function(BuildContext, int);
 
@@ -91,7 +90,21 @@ class GridList extends StatelessWidget {
             ),
             itemBuilder: itemBuild,
           )
-          : const ListLoading(),
+          : const NotFoundContent(),
         );
+  }
+}
+
+class NotFoundContent extends StatelessWidget {
+  const NotFoundContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'No se encontraron resultados',
+        style: TextStyle(color: Theme.of(context).cardColor),
+      ),
+    );
   }
 }

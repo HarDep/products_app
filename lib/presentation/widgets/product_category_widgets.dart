@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
+import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +52,9 @@ class CategoriesHorizontal extends StatelessWidget {
           ),
           SizedBox(
             height: 100,
-            child: principalProvider.categories.length > 1
+            child: ListLoader(
+              loadCondition: principalProvider.loadStatus == LoadStatus.founded,
+              content: principalProvider.categories.length > 1
                 ? ListView.builder(
                     itemCount: principalProvider.categories.length,
                     scrollDirection: Axis.horizontal,
@@ -65,7 +69,8 @@ class CategoriesHorizontal extends StatelessWidget {
                       );
                     },
                   )
-                : const ListLoading(),
+                : const NotFoundContent(),
+            ),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/product_cart.dart';
 import 'package:products_app/domain/repository/repositories.dart';
@@ -12,6 +13,7 @@ class CartProvider extends ChangeNotifier {
   int totalItems = 0;
   double totalPrice = 0;
   ProductsState state = ProductsState.inCart;
+  LoadStatus loadStatus = LoadStatus.loading;
 
   CartProvider({
     required this.localRepositoryInterface,
@@ -25,6 +27,7 @@ class CartProvider extends ChangeNotifier {
     totalItems = cart.fold(0, (sum, prod) => prod.amount + sum);
     totalPrice =
         cart.fold(0, (sum, prod) => prod.amount * prod.product.price + sum);
+    loadStatus = LoadStatus.founded;
     notifyListeners();
   }
 

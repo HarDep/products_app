@@ -1,0 +1,3 @@
+enum LoadStatus {
+  loading, founded
+}

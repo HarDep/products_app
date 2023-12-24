@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
+import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/product_category_widgets.dart';
 import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
@@ -42,7 +44,7 @@ class PrincipalScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CategoriesHorizontal( //TODO: controlar visibilidad de listas al cambiar de categoria
+            CategoriesHorizontal(
               title: 'Explorar categorias',
               isVisibleSeeAllButton: true,
               action: (index) {
@@ -86,6 +88,8 @@ class _SectionProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PrincipalProvider principalProvider =
+        Provider.of(context, listen: true);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
       child: Column(
@@ -102,7 +106,9 @@ class _SectionProducts extends StatelessWidget {
           ),
           SizedBox(
             height: cartHeight,
-            child: productsList.isNotEmpty //TODO: si en una busquda con categoria no hay, usar un estado de lista en provider?
+            child: ListLoader(
+              loadCondition: principalProvider.loadStatus == LoadStatus.founded,
+              content: productsList.isNotEmpty
                 ? ListView.builder(
                     itemCount: productsList.length,
                     scrollDirection: Axis.horizontal,
@@ -122,7 +128,8 @@ class _SectionProducts extends StatelessWidget {
                             );
                     },
                   )
-                : const ListLoading(),
+                : const NotFoundContent(),
+            ),
           ),
         ],
       ),

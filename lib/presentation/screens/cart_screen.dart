@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
+import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product_cart.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
-import 'package:products_app/presentation/providers/home_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
 import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
+import 'package:products_app/presentation/widgets/empty_local_content.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_items.dart';
 import 'package:provider/provider.dart';
@@ -21,9 +22,15 @@ class CartScreen extends StatelessWidget {
         toolbarHeight: 80,
         title: const Text('Carrito'),
       ),
-      body: cartProvider.cart.isNotEmpty
-          ? const _NotEmptyCart()
-          : const _EmptyCart(),
+      body: ListLoader(
+        loadCondition: cartProvider.loadStatus == LoadStatus.founded,
+        content: cartProvider.cart.isEmpty
+            ? const EmptyLocalContent(
+          sufixText: 'tu carrito',
+          sufixTextButton: 'comprar',
+          indexHomeRedirection: 1,
+        ) : const _NotEmptyCart(),
+      ),
     );
   }
 }
@@ -42,7 +49,7 @@ class _NotEmptyCart extends StatelessWidget {
         ),
         Expanded(
           flex: 3,
-          child: cartProvider.cart.isNotEmpty? ListView.builder(
+          child: ListView.builder(
             padding: const EdgeInsets.symmetric(
               vertical: 20,
             ),
@@ -53,7 +60,7 @@ class _NotEmptyCart extends StatelessWidget {
               ProductCart product = cartProvider.cart[index];
               return _ShoppingProduct(product: product);
             },
-          ) : const ListLoading(),
+          ),
         ),
         Expanded(
           flex: 2,
@@ -257,51 +264,6 @@ class _ShoppingProduct extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _EmptyCart extends StatelessWidget {
-  const _EmptyCart();
-  @override
-  Widget build(BuildContext context) {
-    final HomeProvider homeProvider =
-        Provider.of<HomeProvider>(context, listen: false);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/sad.png',
-          color: AppColors.green,
-          height: 120,
-        ),
-        const SizedBox(
-          height: 25,
-        ),
-        Text(
-          'No hay productos en tu carrito',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Theme.of(context).iconTheme.color,
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Center(
-            child: ElevatedButton(
-          style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(AppColors.purple)),
-          onPressed: () {
-            homeProvider.updateIndex(1);
-          },
-          child: const Text(
-            'Ir a comprar',
-            style: TextStyle(color: AppColors.white),
-          ),
-        )),
-      ],
     );
   }
 }

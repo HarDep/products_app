@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product_info.dart';
 import 'package:products_app/domain/repository/local_storage_repository.dart';
 
 class FavoritesProvider extends ChangeNotifier {
   List<ProductInfo> favorites = [];
   final LocalRepositoryInterface localRepositoryInterface;
+  LoadStatus loadStatus = LoadStatus.loading;
 
   final StreamController<List<ProductInfo>> _resultsController =
       StreamController.broadcast();
@@ -17,6 +19,7 @@ class FavoritesProvider extends ChangeNotifier {
 
   void loadFavorites() async {
     favorites = await localRepositoryInterface.getFavorites();
+    loadStatus = LoadStatus.founded;
     notifyListeners();
   }
 
