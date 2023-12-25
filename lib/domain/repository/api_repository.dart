@@ -23,8 +23,10 @@ abstract class ApiRepositoryInterface {
   Future<List<ProductInfo>> getRecommendedProductsByCategory({
     String category = '',
   });
-  Future<List<Product>> getProductsByNameQuery(String query);
-  Future<List<ProductInfo>> getProductsByNameQueryAndCategory({required String query, required String category});
-  //y las sugerencias tambien? o de eso se encarga el provider
-  //filtrar favoritos por query o que lo haga el provider
+  Future<List<Product>> getProductsByNameQuery(String query,
+      {Duration delay = Duration.zero});
+  Future<List<ProductInfo>> getProductsByNameQueryAndCategory(
+      {required String query,
+      required String category,
+      Duration delay = Duration.zero});
 }

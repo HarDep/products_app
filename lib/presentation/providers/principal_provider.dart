@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:products_app/domain/models/load_status.dart';
-import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/domain/models/product_details.dart';
 import 'package:products_app/domain/models/product_info.dart';
@@ -19,8 +18,9 @@ class PrincipalProvider extends ChangeNotifier {
   List<ProductCategory> categories = [];
   List<ProductInfo> famous = [];
   List<ProductInfo> recommended = [];
+  Timer? debouncerTimer;
 
-  final StreamController<List<ProductInfo>> _resultsController =
+  final StreamController<List<ProductInfo>?> _resultsController =
       StreamController.broadcast();
 
   PrincipalProvider({
@@ -28,7 +28,7 @@ class PrincipalProvider extends ChangeNotifier {
     required this.apiRepositoryInterface,
   });
 
-  Stream<List<ProductInfo>> get resultsStream => _resultsController.stream;
+  Stream<List<ProductInfo>?> get resultsStream => _resultsController.stream;
 
   void loadLists() async {
     categories.add(ProductCategory(name: 'Todas', image: 'assets/todas.png'));
@@ -93,11 +93,31 @@ class PrincipalProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void searchProductsQuery(String query, [int categoryIndex = 0]) async {
+  void rebootDebouncerTimer(String query, [int categoryIndex = 0]) {
+    debouncerTimer = Timer(const Duration(milliseconds: 500), () {
+      searchProductsQuery(query, categoryIndex);
+      debouncerTimer!.cancel();
+    });
+  }
+
+  void cancelDebouncerTimer() {
+    debouncerTimer!.cancel();
+  }
+
+  void searchProductsQuery(String query,
+      [int categoryIndex = 0, int millisecondsDelay = 0]) async {
     final String category =
         categoryIndex == 0 ? '' : categories[categoryIndex].name;
-    final result = await apiRepositoryInterface
-        .getProductsByNameQueryAndCategory(query: query, category: category);
+    List<ProductInfo> result;
+    if (millisecondsDelay == 0) {
+      result = await apiRepositoryInterface.getProductsByNameQueryAndCategory(
+          query: query, category: category);
+    } else {
+      result = await apiRepositoryInterface.getProductsByNameQueryAndCategory(
+          query: query,
+          category: category,
+          delay: Duration(milliseconds: millisecondsDelay));
+    }
     final favorites = await localRepositoryInterface.getFavorites();
     for (var favorite in favorites) {
       for (var prod in result) {
@@ -110,12 +130,8 @@ class PrincipalProvider extends ChangeNotifier {
     _resultsController.add(result);
   }
 
-  void showLoadOfChangeCategoryQuery() {
-    final loader = ProductInfo(
-      product: Product(description: '', image: '', name: '', price: 0),
-      category: ProductCategory(name: '@load', image: ''),
-    );
-    _resultsController.add([loader]);
+  void showLoadQuery() {
+    _resultsController.add(null);
   }
 
   void searchListsWithCategories([int categoryIndex = 0]) async {

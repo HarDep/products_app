@@ -75,8 +75,8 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   }
 
   @override
-  Future<List<Product>> getProductsByNameQuery(String query) async {
-    await Future.delayed(const Duration(seconds: 2));
+  Future<List<Product>> getProductsByNameQuery(String query,{Duration delay = Duration.zero}) async {
+    await Future.delayed(delay);
     final productsFiltered = products
         .where((prod) => prod.name.toUpperCase().contains(query.toUpperCase()))
         .toList();
@@ -112,8 +112,8 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   }
   
   @override
-  Future<List<ProductInfo>> getProductsByNameQueryAndCategory({required String query, required String category}) async {
-    await Future.delayed(const Duration(seconds: 1));
+  Future<List<ProductInfo>> getProductsByNameQueryAndCategory({required String query, required String category, Duration delay = Duration.zero}) async {
+    await Future.delayed(delay);
     final productsFiltered = recommended //no es recommended lo uso porque igual hay estan todos los productos
         .where((prod) => prod.product.name.toUpperCase().contains(query.toUpperCase()) &&
         prod.category.name.toUpperCase().contains(category.toUpperCase()) )

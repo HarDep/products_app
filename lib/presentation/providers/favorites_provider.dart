@@ -9,13 +9,14 @@ class FavoritesProvider extends ChangeNotifier {
   List<ProductInfo> favorites = [];
   final LocalRepositoryInterface localRepositoryInterface;
   LoadStatus loadStatus = LoadStatus.loading;
+  Timer? debouncerTimer;
 
-  final StreamController<List<ProductInfo>> _resultsController =
+  final StreamController<List<ProductInfo>?> _resultsController =
       StreamController.broadcast();
 
   FavoritesProvider({required this.localRepositoryInterface});
 
-  Stream<List<ProductInfo>> get resultsStream => _resultsController.stream;
+  Stream<List<ProductInfo>?> get resultsStream => _resultsController.stream;
 
   void loadFavorites() async {
     favorites = await localRepositoryInterface.getFavorites();
@@ -43,7 +44,28 @@ class FavoritesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void searchFavoriteQuery(String query) {
+  void rebootDebouncerTimer(String query) {
+    debouncerTimer = Timer(const Duration(milliseconds: 500), () {
+      searchFavoriteQuery(query);
+      debouncerTimer!.cancel();
+    });
+  }
+
+  void cancelDebouncerTimer() {
+    debouncerTimer!.cancel();
+  }
+
+  void showLoadQuery() {
+    _resultsController.add(null);
+  }
+
+  void searchFavoriteQuery(String query, [int millisecondsDelay = 0]) async {
+    //delay ya que el metodo de busqueda retorna la lista antes de que se haga el build
+    if (millisecondsDelay == 0) {
+      await Future.delayed(Duration.zero);
+    } else {
+      await Future.delayed(Duration(milliseconds: millisecondsDelay));
+    }
     final result = favorites
         .where((elm) =>
             elm.product.name.toUpperCase().contains(query.toUpperCase()))

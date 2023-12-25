@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product.dart';
 import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/products_provider.dart';
+import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/search_field.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
@@ -89,7 +91,12 @@ class ItemProduct extends StatelessWidget {
               text: 'Agregar',
               voidCallback: () {
                 cartProvider.add(product);
-                //TODO : mostrar snack bar cuando se añade al carrito
+                final SnackBar snackBar = CustomeSnackBar.getSnackBar(
+                  text: 'Producto añadido al carrito',
+                  backgroundColor: AppColors.green,
+                  seconds: 1,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
               height: 30,
               textPadding:

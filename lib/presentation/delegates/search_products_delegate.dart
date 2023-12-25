@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/product.dart';
@@ -16,6 +18,7 @@ import 'package:provider/provider.dart';
 class SearchProductsDelegate extends SearchDelegate<Product> {
   final TagPage tagPage;
   int categoryIndex = 0;
+  final int millisecondsLoadDelay = 500;
 
   SearchProductsDelegate({required this.tagPage});
 
@@ -82,40 +85,46 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
   Widget buildResults(BuildContext context) {
     switch (tagPage) {
       case TagPage.principal:
-        return _getPrincipalResults(context);
+        return _getPrincipalContent(context, true);
       case TagPage.favorites:
-        return _getFavoritesResults(context);
+        return _getFavoritesContent(context, true);
       case TagPage.products:
-        return _getProductsResults(context);
+        return _getProductsContent(context, true);
     }
   }
 
-//TODO: hacer search suggestions
   @override
   Widget buildSuggestions(BuildContext context) {
     switch (tagPage) {
       case TagPage.principal:
-        return const Text('suggestions');
+        return _getPrincipalContent(context, false);
       case TagPage.favorites:
-        return const Text('suggestions');
+        return _getFavoritesContent(context, false);
       case TagPage.products:
-        return const Text('suggestions');
+        return _getProductsContent(context, false);
     }
   }
 
-  Widget _getPrincipalResults(BuildContext context) {
+  Widget _getPrincipalContent(BuildContext context, bool isBuildResults) {
     final PrincipalProvider principalProvider =
-        Provider.of<PrincipalProvider>(context);
-    principalProvider.searchProductsQuery(query);
+        Provider.of<PrincipalProvider>(context, listen: false);
+    if (isBuildResults) {
+      principalProvider.cancelDebouncerTimer();
+      principalProvider.searchProductsQuery(query, categoryIndex);
+    } else {
+      principalProvider.rebootDebouncerTimer(query, categoryIndex);
+      principalProvider.showLoadQuery();
+    }
     return Column(
       children: [
         CategoriesHorizontal(
           title: 'Selecciona una categoria',
           isVisibleSeeAllButton: false,
           action: (index) {
-            principalProvider.showLoadOfChangeCategoryQuery();
+            principalProvider.showLoadQuery();
             categoryIndex = index;
-            principalProvider.searchProductsQuery(query, index);
+            principalProvider.searchProductsQuery(
+                query, index, millisecondsLoadDelay);
           },
         ),
         _StreamConstructor<ProductInfo>(
@@ -137,12 +146,16 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     );
   }
 
-  Widget _getFavoritesResults(BuildContext context) {
+  Widget _getFavoritesContent(BuildContext context, bool isBuildResults) {
     final FavoritesProvider favoritesProvider =
         Provider.of<FavoritesProvider>(context, listen: false);
-    //delay ya que el metodo de busqueda retorna la lista antes de que se haga el build
-    Future.delayed(
-        Duration.zero, () => favoritesProvider.searchFavoriteQuery(query));
+    if (isBuildResults) {
+      favoritesProvider.cancelDebouncerTimer();
+      favoritesProvider.searchFavoriteQuery(query);
+    } else {
+      favoritesProvider.rebootDebouncerTimer(query);
+      favoritesProvider.showLoadQuery();
+    }
     return _StreamConstructor<ProductInfo>(
       isChild: false,
       stream: favoritesProvider.resultsStream,
@@ -160,10 +173,16 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
     );
   }
 
-  Widget _getProductsResults(BuildContext context) {
+  Widget _getProductsContent(BuildContext context, bool isBuildResults) {
     final ProductsProvider productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
-    productsProvider.searchProductsQuery(query);
+    if (isBuildResults) {
+      productsProvider.cancelDebouncerTimer();
+      productsProvider.searchProductsQuery(query);
+    } else {
+      productsProvider.rebootDebouncerTimer(query);
+      productsProvider.showLoadQuery();
+    }
     return _StreamConstructor<Product>(
       isChild: false,
       stream: productsProvider.resultsStream,
@@ -180,7 +199,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
 typedef ItemBuilding<T> = Widget Function(BuildContext, T);
 
 class _StreamConstructor<T> extends StatelessWidget {
-  final Stream<List<T>> stream;
+  final Stream<List<T>?> stream;
   final ItemBuilding<T> itemBuilding;
   final String listTitle;
   final bool isChild;
@@ -194,17 +213,12 @@ class _StreamConstructor<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: stream,
-      builder: (context, AsyncSnapshot<List<T>> snapshot) {
+      builder: (context, AsyncSnapshot<List<T>?> snapshot) {
         //print(snapshot.data);
         if (snapshot.data == null) {
           return const ListLoading();
         }
         final List<T> list = snapshot.data!;
-        if((list.runtimeType == List<ProductInfo> ) && list.isNotEmpty){
-          if((list[0] as ProductInfo).category.name == '@load'){
-            return const ListLoading();
-          }
-        }
         return list.isNotEmpty
             ? isChild
                 ? GridViewListAsChild(
