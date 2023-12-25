@@ -59,8 +59,6 @@ class PrincipalProvider extends ChangeNotifier {
     }
   }
 
-  //cuando ponga la seccion de categorias cada boton va a hacer el filtro de categoria y luego navigate.pop
-
   void setCurrentHeroProduct(ProductInfo product) async {
     currentInfo = product;
     currentDetails =

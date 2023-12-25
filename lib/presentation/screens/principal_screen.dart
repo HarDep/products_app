@@ -34,7 +34,7 @@ class PrincipalScreen extends StatelessWidget {
                 color: AppColors.pink,
               ),
               onPressed: () {
-                // Acción a realizar cuando se presiona el botón
+                // TODO: Acción a realizar cuando se presiona el botón de notificaciones
               },
             ),
           ),

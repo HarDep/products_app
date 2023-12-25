@@ -3,6 +3,7 @@ import 'package:products_app/configs/colors.dart';
 import 'package:products_app/domain/models/load_status.dart';
 import 'package:products_app/domain/models/product_category.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
+import 'package:products_app/presentation/screens/categories_screen.dart';
 import 'package:products_app/presentation/widgets/grid_view_list.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,11 @@ class CategoriesHorizontal extends StatelessWidget {
               if (isVisibleSeeAllButton)
                 TextButton(
                   onPressed: () {
-                    //TODO: ver todas las categorias screen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CategoriesScreen(),
+                      ),
+                    );
                   },
                   child: const Text(
                     'Ver todas',
@@ -55,21 +60,21 @@ class CategoriesHorizontal extends StatelessWidget {
             child: ListLoader(
               loadCondition: principalProvider.loadStatus == LoadStatus.founded,
               content: principalProvider.categories.length > 1
-                ? ListView.builder(
-                    itemCount: principalProvider.categories.length,
-                    scrollDirection: Axis.horizontal,
-                    itemExtent: 100,
-                    itemBuilder: (context, index) {
-                      ProductCategory category =
-                          principalProvider.categories[index];
-                      return Category(
-                        category: category,
-                        index: index,
-                        action: action,
-                      );
-                    },
-                  )
-                : const NotFoundContent(),
+                  ? ListView.builder(
+                      itemCount: principalProvider.categories.length,
+                      scrollDirection: Axis.horizontal,
+                      itemExtent: 100,
+                      itemBuilder: (context, index) {
+                        ProductCategory category =
+                            principalProvider.categories[index];
+                        return Category(
+                          category: category,
+                          index: index,
+                          action: action,
+                        );
+                      },
+                    )
+                  : const NotFoundContent(),
             ),
           ),
         ],
@@ -84,17 +89,20 @@ class Category extends StatelessWidget {
   final IndexVoidCallBack action;
   final int index;
   final ProductCategory category;
-  const Category({
-    super.key,
-    required this.category,
-    required this.index,
-    required this.action,
-  });
+  final EdgeInsetsGeometry padding;
+  final bool showCategoryName;
+  const Category(
+      {super.key,
+      required this.category,
+      required this.index,
+      required this.action,
+      this.padding = const EdgeInsets.only(right: 8.0),
+      this.showCategoryName = true});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +125,7 @@ class Category extends StatelessWidget {
               ),
             ),
           ),
-          Text(
+          if(showCategoryName) Text(
             category.name,
             style: const TextStyle(color: AppColors.green),
           ),
