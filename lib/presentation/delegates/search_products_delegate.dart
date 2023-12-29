@@ -33,14 +33,7 @@ class SearchProductsDelegate extends SearchDelegate<Product> {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    return ThemeData(
-      canvasColor: Theme.of(context).canvasColor,
-      iconTheme: IconThemeData(
-        color: Theme.of(context).iconTheme.color!,
-      ),
-      cardColor: Theme.of(context).cardColor,
-      appBarTheme: Theme.of(context).appBarTheme,
-      scaffoldBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return Theme.of(context).copyWith(
       hintColor: AppColors.lightGrey,
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

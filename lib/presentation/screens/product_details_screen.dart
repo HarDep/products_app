@@ -6,6 +6,7 @@ import 'package:products_app/presentation/providers/cart_provider.dart';
 import 'package:products_app/presentation/providers/principal_provider.dart';
 import 'package:products_app/presentation/widgets/avatar_clips.dart';
 import 'package:products_app/presentation/widgets/custome_button.dart';
+import 'package:products_app/presentation/widgets/custome_hero_circle_border.dart';
 import 'package:products_app/presentation/widgets/custome_snack_bar.dart';
 import 'package:products_app/presentation/widgets/loading_widgets.dart';
 import 'package:products_app/presentation/widgets/product_cards.dart';
@@ -43,15 +44,6 @@ class ProductDetailScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          /* Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: size.width - radius,
-            child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-            ),
-          ), */
           Positioned(
             top: 0,
             bottom: (size.height / 2) - (radius / 2),
@@ -78,6 +70,15 @@ class ProductDetailScreen extends StatelessWidget {
               child: _ItemsDetails(
                 product: principalProvider.currentInfo!,
               ),
+            ),
+          ),
+          Positioned(
+            top: (size.height / 2) - (radius / 2) - radius,
+            right: 0,
+            left: size.width - radius,
+            bottom: (size.height / 2) - (radius / 2),
+            child: CustomPaint(
+              painter: CustomeHeroCircleBorder(context: context, radius: radius),
             ),
           ),
           Positioned(
