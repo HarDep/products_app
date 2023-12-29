@@ -17,7 +17,7 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
     if (token == 'A1') {
       return User(
           name: 'Carlos Perez',
-          username: 'Carlitos1',
+          username: 'user1',
           image: 'assets/carlos.png');
     } else if (token == 'A2') {
       return User(
@@ -29,10 +29,10 @@ class ApiReppositoryImpl extends ApiRepositoryInterface {
   @override
   Future<LoginResponse> login(LoginRequest login) async {
     await Future.delayed(const Duration(seconds: 1));
-    if (login.username == 'Carlitos1' && login.password == '123') {
+    if (login.username == 'user1' && login.password == '123') {
       final User user = User(
           name: 'Carlos Perez',
-          username: 'Carlitos1',
+          username: 'user1',
           image: 'assets/carlos.png');
       return LoginResponse(user: user, token: 'A1');
     } else if (login.username == 'Juanito1' && login.password == '321') {
