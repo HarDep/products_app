@@ -21,7 +21,7 @@ This is a flutter project that can perform different actions related to the purc
 
 ## See the app
 
-https://github.com/HarDep/products_app/assets/129080615/d5442929-6bcb-4bc7-ae62-8fe6270ad323
+https://github.com/HarDep/products_app/assets/129080615/6c7ac346-f0e9-4602-9360-bc0d617b0a6d
 
 ## Clone products_app
 
